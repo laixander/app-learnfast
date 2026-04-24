@@ -36,8 +36,8 @@ const { isScrolled } = useStickyHeader()
             container: [
                 'transition-all duration-500 flex items-center pointer-events-auto',
                 isScrolled
-                    ? 'bg-white/70 backdrop-blur-2xl shadow-2xl shadow-primary-600/40 p-6 rounded-sm ring-6 ring-primary-500/40'
-                    : 'bg-transparent p-4 rounded-sm ring-6 ring-primary-500/0'
+                    ? 'bg-white/70 backdrop-blur-2xl shadow-2xl shadow-primary-600/40 p-6 rounded-lg ring-4 ring-white'
+                    : 'bg-transparent p-4 rounded-sm ring-4 ring-white/0'
             ].join(' ')
         }">
             <template #left>
@@ -59,94 +59,97 @@ const { isScrolled } = useStickyHeader()
             <NuxtPage />
         </UMain>
 
-        <!-- Fancy Footer -->
-        <footer class="relative overflow-hidden">
-            <!-- Wavy SVG separator -->
-            <div class="w-full overflow-hidden leading-[0]">
-                <svg class="relative block w-full h-16 md:h-24" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                    <path d="M0,40 C150,100 350,0 600,40 C850,80 1050,0 1200,40 L1200,120 L0,120 Z"
-                        class="fill-primary-700" />
-                    <path d="M0,60 C200,110 400,20 600,60 C800,100 1000,20 1200,60 L1200,120 L0,120 Z"
-                        class="fill-primary-800/80" />
-                </svg>
-            </div>
 
-            <div class="bg-linear-to-br from-primary-800 via-purple-900 to-indigo-950 relative">
-                <!-- Decorative floating elements -->
-                <UIcon name="i-ph-sparkle-fill"
-                    class="absolute top-8 left-[10%] size-6 text-yellow-400/20 animate-pulse" />
-                <UIcon name="i-ph-star-fill"
-                    class="absolute top-16 right-[15%] size-5 text-purple-300/15 animate-bounce" />
-                <UIcon name="i-ph-sparkle-fill"
-                    class="absolute bottom-20 left-[70%] size-4 text-primary-300/20 animate-pulse" />
-                <UIcon name="i-ph-planet-fill"
-                    class="absolute top-12 right-[40%] size-8 text-indigo-400/10 animate-spin"
-                    style="animation-duration: 20s" />
+        <UFooter :ui="{ top: 'py-0 lg:py-0', container: 'lg:hidden' }">
 
-                <div class="max-w-(--ui-container) mx-auto px-6 md:px-8 pt-12 pb-8">
-                    <!-- Top section: brand + links -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-                        <!-- Brand column -->
-                        <div class="flex flex-col gap-4">
-                            <NuxtLink to="/" class="flex items-center gap-3 group w-fit">
-                                <AppLogo class="h-10 w-fit" />
-                                <span class="text-white font-black tracking-tight text-2xl">LearnFast!</span>
-                            </NuxtLink>
-                            <p class="text-primary-200/70 text-sm leading-relaxed max-w-xs">
-                                Making learning feel like an adventure. Join thousands of kids exploring, creating, and
-                                growing
-                                every day.
-                            </p>
-                        </div>
+            <template #top>
+                <div class="w-full overflow-hidden leading-[0]">
+                    <svg class="relative block w-full h-16 md:h-24" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                        <path d="M0,40 C150,100 350,0 600,40 C850,80 1050,0 1200,40 L1200,120 L0,120 Z"
+                            class="fill-primary-700" />
+                        <path d="M0,60 C200,110 400,20 600,60 C800,100 1000,20 1200,60 L1200,120 L0,120 Z"
+                            class="fill-primary-800/80" />
+                    </svg>
+                </div>
+                <div
+                    class="bg-primary-700 bg-linear-to-b from-primary-800/80 via-primary-800 to-purple-800 relative pt-12 pb-8">
+                    <!-- Decorative floating elements -->
+                    <UIcon name="i-ph-sparkle-fill"
+                        class="absolute top-8 left-[10%] size-6 text-yellow-400/20 animate-pulse" />
+                    <UIcon name="i-ph-star-fill"
+                        class="absolute top-16 right-[15%] size-5 text-purple-300/15 animate-bounce" />
+                    <UIcon name="i-ph-sparkle-fill"
+                        class="absolute bottom-20 left-[70%] size-4 text-primary-300/20 animate-pulse" />
+                    <UIcon name="i-ph-planet-fill"
+                        class="absolute top-12 right-[40%] size-8 text-indigo-400/10 animate-spin"
+                        style="animation-duration: 20s" />
+                    <UContainer>
+                        <!-- Top section: brand + links -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                            <!-- Brand column -->
+                            <div class="flex flex-col gap-4">
+                                <NuxtLink to="/" class="flex items-center gap-3 group w-fit">
+                                    <AppLogo class="h-10 w-fit" />
+                                    <span class="text-white font-bold tracking-tight text-2xl">LearnFast!</span>
+                                </NuxtLink>
+                                <p class="text-primary-200/70 text-sm leading-relaxed max-w-xs">
+                                    Making learning feel like an adventure. Join thousands of kids exploring, creating,
+                                    and
+                                    growing
+                                    every day.
+                                </p>
+                            </div>
 
-                        <!-- Quick Links -->
-                        <div class="flex flex-col gap-3">
-                            <h4 class="text-white/90 font-bold text-sm uppercase tracking-widest mb-1">Explore</h4>
-                            <NuxtLink to="/register"
-                                class="text-primary-200/60 hover:text-yellow-300 text-sm font-medium transition-colors duration-300 w-fit flex items-center gap-2 group">
-                                <UIcon name="i-ph-rocket-launch"
-                                    class="size-4 group-hover:translate-x-0.5 transition-transform" />
-                                Start Learning
-                            </NuxtLink>
-                            <NuxtLink to="/login"
-                                class="text-primary-200/60 hover:text-yellow-300 text-sm font-medium transition-colors duration-300 w-fit flex items-center gap-2 group">
-                                <UIcon name="i-ph-sign-in"
-                                    class="size-4 group-hover:translate-x-0.5 transition-transform" />
-                                Sign In
-                            </NuxtLink>
-                        </div>
+                            <!-- Quick Links -->
+                            <div class="flex flex-col gap-3">
+                                <h4 class="text-white/90 font-bold text-sm uppercase tracking-widest mb-1">Explore</h4>
+                                <NuxtLink to="/register"
+                                    class="text-primary-200/60 hover:text-yellow-300 text-sm font-medium transition-colors duration-300 w-fit flex items-center gap-2 group">
+                                    <UIcon name="i-ph-rocket-launch"
+                                        class="size-4 group-hover:translate-x-0.5 transition-transform" />
+                                    Start Learning
+                                </NuxtLink>
+                                <NuxtLink to="/login"
+                                    class="text-primary-200/60 hover:text-yellow-300 text-sm font-medium transition-colors duration-300 w-fit flex items-center gap-2 group">
+                                    <UIcon name="i-ph-sign-in"
+                                        class="size-4 group-hover:translate-x-0.5 transition-transform" />
+                                    Sign In
+                                </NuxtLink>
+                            </div>
 
-                        <!-- Social / Connect -->
-                        <div class="flex flex-col gap-3">
-                            <h4 class="text-white/90 font-bold text-sm uppercase tracking-widest mb-1">Connect</h4>
-                            <div class="flex items-center gap-2">
-                                <UButton to="https://github.com/nuxt-ui-templates/starter" target="_blank"
-                                    icon="i-simple-icons-github" aria-label="GitHub" variant="ghost"
-                                    class="text-primary-200/50 hover:text-white hover:bg-white/10 transition-all" />
-                                <UButton to="#" icon="i-simple-icons-x" aria-label="X" variant="ghost"
-                                    class="text-primary-200/50 hover:text-white hover:bg-white/10 transition-all" />
-                                <UButton to="#" icon="i-simple-icons-discord" aria-label="Discord" variant="ghost"
-                                    class="text-primary-200/50 hover:text-white hover:bg-white/10 transition-all" />
+                            <!-- Social / Connect -->
+                            <div class="flex flex-col gap-3">
+                                <h4 class="text-white/90 font-bold text-sm uppercase tracking-widest mb-1">Connect</h4>
+                                <div class="flex items-center gap-2">
+                                    <UButton to="https://github.com/nuxt-ui-templates/starter" target="_blank"
+                                        icon="i-simple-icons-github" aria-label="GitHub" variant="ghost"
+                                        class="text-primary-200/50 hover:text-white hover:bg-white/10 transition-all" />
+                                    <UButton to="#" icon="i-simple-icons-x" aria-label="X" variant="ghost"
+                                        class="text-primary-200/50 hover:text-white hover:bg-white/10 transition-all" />
+                                    <UButton to="#" icon="i-simple-icons-discord" aria-label="Discord" variant="ghost"
+                                        class="text-primary-200/50 hover:text-white hover:bg-white/10 transition-all" />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <!-- Divider -->
+                        <div class="h-px bg-linear-to-r from-transparent via-white/15 to-transparent mb-6" />
 
-                    <!-- Divider -->
-                    <div class="h-px bg-linear-to-r from-transparent via-white/15 to-transparent mb-6" />
-
-                    <!-- Bottom bar -->
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-3">
-                        <p class="text-primary-200/40 text-xs font-medium">
-                            © {{ new Date().getFullYear() }} LearnFast — Made with
-                            <UIcon name="i-ph-heart-fill" class="inline size-3 text-pink-400 animate-pulse mx-0.5" />
-                            for curious minds
-                        </p>
-                        <p class="text-primary-200/30 text-xs">
-                            Learning is an adventure!
-                        </p>
-                    </div>
+                        <!-- Bottom bar -->
+                        <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+                            <p class="text-primary-200/40 text-xs font-medium">
+                                © {{ new Date().getFullYear() }} LearnFast — Made with
+                                <UIcon name="i-ph-heart-fill"
+                                    class="inline size-3 text-pink-400 animate-pulse mx-0.5" />
+                                for curious minds
+                            </p>
+                            <p class="text-primary-200/30 text-xs">
+                                Learning is an adventure!
+                            </p>
+                        </div>
+                    </UContainer>
                 </div>
-            </div>
-        </footer>
+            </template>
+
+        </UFooter>
     </div>
 </template>

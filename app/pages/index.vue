@@ -56,7 +56,7 @@ const features = [
 </script>
 
 <template>
-  <BackgroundDecorations />
+  <BgDecorations />
 
   <UPageHero
     description="Discover a world of fun, games, and learning with LearnFast. Start your journey today and unlock your potential!"
