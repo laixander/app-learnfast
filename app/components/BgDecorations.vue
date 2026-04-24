@@ -54,17 +54,11 @@ const getParallaxStyle = (depth: number) => {
 
 <template>
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
-        <UIcon
-            v-for="(icon, index) in backgroundIcons"
-            :key="index"
-            :name="icon.name"
-            class="absolute opacity-80"
-            :class="[icon.size, icon.color, icon.rotate]"
-            :style="{
+        <UIcon v-for="(icon, index) in backgroundIcons" :key="index" :name="icon.name" class="absolute opacity-80"
+            :class="[icon.size, icon.color, icon.rotate]" :style="{
                 top: icon.top,
                 left: icon.left,
                 ...getParallaxStyle(icon.depth)
-            }"
-        />
+            }" />
     </div>
 </template>
