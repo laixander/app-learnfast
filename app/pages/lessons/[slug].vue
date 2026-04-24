@@ -59,8 +59,8 @@ const progress = computed(() => {
 </script>
 
 <template>
+    <BgDecorations />
     <div v-if="lesson" class="relative min-h-[70vh]">
-        <BgDecorations />
 
         <div class="relative z-10 flex flex-col gap-8 max-w-4xl mx-auto">
             <!-- Lesson Header -->
@@ -152,7 +152,7 @@ const progress = computed(() => {
                             <h2 class="text-5xl md:text-6xl font-black">Amazing Job!</h2>
                             <p class="text-2xl opacity-90 font-medium">You completed the <span
                                     class="underline underline-offset-8">{{
-                                    lesson.title }}</span> lesson!</p>
+                                        lesson.title }}</span> lesson!</p>
 
                             <div class="flex gap-4 mt-4">
                                 <div
