@@ -7,8 +7,6 @@ const { lessons } = useLessons()
 </script>
 
 <template>
-    <BgDecorations />
-
     <div class="relative z-10 flex flex-col gap-8">
         <header class="flex flex-col gap-2">
             <h1 class="text-4xl md:text-6xl font-black text-toned">

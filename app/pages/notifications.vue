@@ -12,8 +12,6 @@ const notifications = [
 </script>
 
 <template>
-    <BgDecorations />
-
     <div class="relative z-10 flex flex-col gap-8 max-w-3xl mx-auto">
         <header class="flex flex-col gap-2">
             <h1 class="text-4xl md:text-6xl font-black text-toned">
@@ -39,6 +37,6 @@ const notifications = [
             </div>
         </div>
 
-        <UButton label="Clear All Notifications" variant="subtle" color="primary" class="font-bold py-4 rounded-2xl" />
+        <UButton label="Clear All Notifications" variant="subtle" block class="font-bold py-4" />
     </div>
 </template>

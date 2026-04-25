@@ -12,9 +12,6 @@ const items = [
 </script>
 
 <template>
-
-    <BgDecorations />
-
     <div class="relative z-10 flex flex-col gap-8">
         <header class="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="flex flex-col gap-2">

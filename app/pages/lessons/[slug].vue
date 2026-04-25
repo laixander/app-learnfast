@@ -59,7 +59,6 @@ const progress = computed(() => {
 </script>
 
 <template>
-    <BgDecorations />
     <div v-if="lesson" class="relative min-h-[70vh]">
 
         <div class="relative z-10 flex flex-col gap-8 max-w-4xl mx-auto">

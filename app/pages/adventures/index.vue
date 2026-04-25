@@ -13,8 +13,6 @@ const filteredAdventures = computed(() => {
 </script>
 
 <template>
-    <BgDecorations />
-
     <div class="relative z-10 flex flex-col gap-10">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div class="flex flex-col gap-2">

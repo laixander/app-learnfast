@@ -32,8 +32,6 @@ const settingsGroups = [
 </script>
 
 <template>
-    <BgDecorations />
-
     <div class="relative z-10 flex flex-col gap-10 max-w-2xl mx-auto">
         <header class="flex flex-col gap-2">
             <h1 class="text-4xl md:text-6xl font-black text-toned">

@@ -32,7 +32,6 @@ const progressMessage = computed(() => {
 </script>
 
 <template>
-    <BgDecorations />
     <div v-if="adventure" class="relative">
 
         <div class="relative z-10 flex flex-col gap-10">

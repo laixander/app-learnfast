@@ -66,8 +66,6 @@ const claimAllRewards = () => {
 </script>
 
 <template>
-    <BgDecorations />
-
     <div class="relative z-10 flex flex-col gap-10">
         <!-- Welcome Header -->
         <header

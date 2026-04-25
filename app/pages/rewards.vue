@@ -15,8 +15,6 @@ const dailyRewards = [
 </script>
 
 <template>
-    <BgDecorations />
-
     <div class="relative z-10 flex flex-col gap-10 max-w-5xl mx-auto">
         <header class="text-center flex flex-col gap-4">
             <div

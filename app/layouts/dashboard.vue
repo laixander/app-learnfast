@@ -12,6 +12,7 @@ const navLinks = [
 
 <template>
     <div class="flex flex-col min-h-screen relative bg-linear-to-b from-purple-200 to-yellow-50">
+        <BgDecorations />
         <UHeader :ui="{
             root: [
                 'backdrop-blur-none bg-transparent border-b-0 fixed top-0 left-0 right-0 z-50 transition-all duration-500 pointer-events-none w-full max-w-(--ui-container) mx-auto px-8 h-auto',
@@ -68,8 +69,8 @@ const navLinks = [
             </template>
             <template #right>
                 <div class="flex gap-4">
-                    <UButton to="/help" icon="i-ph-question-duotone" variant="ghost" color="neutral" size="sm" />
-                    <UButton to="/settings" icon="i-ph-gear-duotone" variant="ghost" color="neutral" size="sm" />
+                    <UButton to="/help" icon="i-ph-question-duotone" variant="ghost" color="neutral" />
+                    <UButton to="/settings" icon="i-ph-gear-duotone" variant="ghost" color="neutral" />
                 </div>
             </template>
         </UFooter>

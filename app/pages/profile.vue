@@ -18,8 +18,6 @@ const recentBadges = [
 </script>
 
 <template>
-    <BgDecorations />
-
     <div class="relative z-10 flex flex-col gap-10 max-w-4xl mx-auto">
         <!-- Profile Header -->
         <div
