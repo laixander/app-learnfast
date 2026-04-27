@@ -37,20 +37,14 @@ export const useUserStore = () => {
     )
 
     // --- Seeder state — controls whether data is populated or empty ---
-    // Defaults to false so the app starts empty as requested
-    const isSeeded = useState('seeded', () => false)
+    // Using a cookie so the server knows the seeded state on refresh (prevents hydration mismatch)
+    const seededCookie = useCookie('learnfast-seeded', { default: () => 'false', watch: true })
+    const isSeeded = useState('seeded', () => seededCookie.value === 'true')
 
-    // Sync with LocalStorage on the client
-    if (import.meta.client) {
-        const stored = localStorage.getItem('learnfast-seeded')
-        if (stored !== null) {
-            isSeeded.value = stored === 'true'
-        }
-
-        watch(isSeeded, (newVal) => {
-            localStorage.setItem('learnfast-seeded', newVal.toString())
-        }, { immediate: true })
-    }
+    // Sync state to cookie
+    watch(isSeeded, (newVal) => {
+        seededCookie.value = newVal.toString()
+    })
 
     // --- Computed Helpers ---
     const canClaim = computed(() =>

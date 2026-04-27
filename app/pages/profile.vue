@@ -65,7 +65,8 @@ const profileStats = computed(() =>
             </h2>
             <template v-if="isSeeded">
                 <div class="flex flex-wrap gap-6 justify-center">
-                    <div v-for="badge in PROFILE_BADGES" :key="badge.name" class="flex flex-col items-center gap-3 group">
+                    <div v-for="badge in PROFILE_BADGES" :key="badge.name"
+                        class="flex flex-col items-center gap-3 group">
                         <div
                             :class="[badge.color, 'p-6 rounded-3xl shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500']">
                             <UIcon :name="badge.icon" class="text-white size-12 flex" />

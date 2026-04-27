@@ -15,6 +15,12 @@ const { seedData, clearData } = useUserStore()
 
 const fabActions = [
     {
+        label: 'DevDocs',
+        icon: 'i-ph-book-duotone',
+        color: 'bg-amber-500 hover:bg-amber-600',
+        onClick: () => { navigateTo('/dev'); fabOpen.value = false }
+    },
+    {
         label: 'Seed Data',
         icon: 'i-ph-database-duotone',
         color: 'bg-emerald-500 hover:bg-emerald-600',
@@ -137,6 +143,7 @@ const fabActions = [
 .fab-item-leave-active {
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
 .fab-item-enter-from,
 .fab-item-leave-to {
     opacity: 0;
@@ -148,6 +155,7 @@ const fabActions = [
 .fab-backdrop-leave-active {
     transition: opacity 0.2s ease;
 }
+
 .fab-backdrop-enter-from,
 .fab-backdrop-leave-to {
     opacity: 0;

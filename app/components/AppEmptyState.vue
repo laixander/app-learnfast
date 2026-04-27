@@ -25,17 +25,19 @@ const theme = computed(() => colorMap[props.color] ?? colorMap.violet!)
 </script>
 
 <template>
-    <div :class="`bg-linear-to-br ${theme.bg} rounded-[3rem] border-4 border-white/80 shadow-2xl overflow-hidden relative`">
+    <div
+        :class="`bg-linear-to-br ${theme.bg} rounded-[3rem] border-4 border-white/80 shadow-2xl overflow-hidden relative min-h-[400px] flex items-center justify-center transition-all duration-500` ">
         <!-- Decorative blobs -->
         <div :class="`absolute -top-16 -left-16 size-48 ${theme.blob1} rounded-full blur-3xl opacity-60`" />
         <div :class="`absolute -bottom-16 -right-16 size-64 ${theme.blob2} rounded-full blur-3xl opacity-50`" />
 
-        <div class="relative z-10 flex flex-col items-center text-center py-16 px-8 gap-6">
+        <div class="relative z-10 flex flex-col items-center text-center py-16 px-8 gap-6 w-full">
             <!-- Animated icon container -->
             <div class="relative">
                 <div :class="`absolute inset-0 ${theme.glow} rounded-full blur-2xl opacity-40 animate-pulse scale-150`" />
-                <div class="relative bg-white/80 backdrop-blur-sm p-8 rounded-[2rem] shadow-xl ring-4 ring-white animate-bounce-slow">
-                    <UIcon :name="icon" :class="`size-16 ${theme.icon}`" />
+                <div
+                    class="relative bg-white/80 backdrop-blur-sm p-8 rounded-[2rem] shadow-xl ring-4 ring-white animate-bounce-slow flex items-center justify-center">
+                    <UIcon :name="icon" :class="`size-16 ${theme.icon} flex`" />
                 </div>
             </div>
 
