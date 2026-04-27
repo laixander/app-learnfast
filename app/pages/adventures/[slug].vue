@@ -5,10 +5,16 @@ definePageMeta({
 
 const route = useRoute()
 const { adventures } = useAdventures()
+const { isSeeded } = useUserStore()
 
 const adventure = computed(() => {
     return adventures.find(a => a.slug === route.params.slug)
 })
+
+// Redirect if data is cleared
+watch(isSeeded, (newVal) => {
+    if (!newVal) navigateTo('/adventures')
+}, { immediate: true })
 
 if (!adventure.value) {
     throw createError({ statusCode: 404, statusMessage: 'Adventure not found' })

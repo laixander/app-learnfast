@@ -4,9 +4,6 @@ export default defineNuxtConfig({
         '@nuxt/eslint',
         '@nuxt/ui'
     ],
-    ui: {
-        colorMode: false
-    },
 
     devtools: {
         enabled: true
@@ -26,6 +23,40 @@ export default defineNuxtConfig({
                 commaDangle: 'never',
                 braceStyle: '1tbs'
             }
+        }
+    },
+    ui: {
+        colorMode: false,
+        theme: {
+            colors: [
+                'primary',
+                'secondary',
+                'success',
+                'info',
+                'warning',
+                'error',
+                'red',
+                'orange',
+                'amber',
+                'yellow',
+                'lime',
+                'green',
+                'emerald',
+                'teal',
+                'cyan',
+                'sky',
+                'blue',
+                'indigo',
+                'violet',
+                'purple',
+                'fuchsia',
+                'pink',
+                'rose',
+                'slate',
+                'gray',
+                'zinc',
+                'stone'
+            ]
         }
     },
     vite: {

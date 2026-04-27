@@ -1,20 +1,20 @@
 <script setup lang="ts">
+import { PROFILE_STAT_CONFIG, PROFILE_BADGES } from '~/constants/gameData'
+
 definePageMeta({
     layout: 'dashboard'
 })
 
-const stats = [
-    { label: 'Total XP', value: '15.4k', icon: 'i-ph-lightning-duotone', color: 'text-yellow-500' },
-    { label: 'Lessons Done', value: '42', icon: 'i-ph-book-open-duotone', color: 'text-emerald-500' },
-    { label: 'Badges', value: '12', icon: 'i-ph-medal-duotone', color: 'text-pink-500' },
-    { label: 'Friends', value: '8', icon: 'i-ph-users-duotone', color: 'text-indigo-500' }
-]
+const { user, stats, isSeeded } = useUserStore()
 
-const recentBadges = [
-    { name: 'Fast Learner', icon: 'i-ph-rocket-launch-duotone', color: 'bg-indigo-500' },
-    { name: 'Math Genius', icon: 'i-ph-calculator-duotone', color: 'bg-emerald-500' },
-    { name: 'Book Worm', icon: 'i-ph-book-duotone', color: 'bg-rose-500' }
-]
+const profileStats = computed(() =>
+    PROFILE_STAT_CONFIG.map(config => ({
+        ...config,
+        value: config.valueKey === 'totalXp'
+            ? stats.value.totalXp
+            : String(stats.value[config.valueKey as keyof typeof stats.value] ?? config.valueKey)
+    }))
+)
 </script>
 
 <template>
@@ -25,15 +25,15 @@ const recentBadges = [
             <div class="relative">
                 <div
                     class="absolute -inset-4 bg-linear-to-r from-primary-400 to-pink-400 rounded-full blur-xl opacity-50 animate-pulse" />
-                <UAvatar src="https://api.dicebear.com/9.x/thumbs/svg?seed=Felix" alt="User" size="xl"
+                <UAvatar :src="`https://api.dicebear.com/9.x/thumbs/svg?seed=${user.avatar}`" alt="User" size="xl"
                     class="relative ring-8 ring-white size-32 md:size-40 shadow-2xl" />
                 <div
                     class="absolute -bottom-2 -right-2 bg-yellow-400 text-yellow-900 font-black px-6 py-2 rounded-full text-xl shadow-lg border-4 border-white transform rotate-6">
-                    LVL 12
+                    LVL {{ user.level }}
                 </div>
             </div>
             <div>
-                <h1 class="text-4xl md:text-5xl font-black text-toned">Explorer Felix</h1>
+                <h1 class="text-4xl md:text-5xl font-black text-toned">Explorer {{ user.name }}</h1>
                 <p class="text-xl text-muted font-medium mt-1">Master of Space and Math</p>
             </div>
             <div class="flex gap-4">
@@ -44,14 +44,18 @@ const recentBadges = [
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div v-for="stat in stats" :key="stat.label"
-                class="bg-white/60 backdrop-blur-md p-6 rounded-[2.5rem] border-2 border-white flex flex-col items-center gap-2 shadow-lg">
-                <UIcon :name="stat.icon" :class="[stat.color, 'size-10']" />
-                <span class="text-3xl font-black text-toned leading-none">{{ stat.value }}</span>
-                <span class="text-xs font-bold text-muted uppercase tracking-widest">{{ stat.label }}</span>
+        <template v-if="isSeeded">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div v-for="stat in profileStats" :key="stat.label"
+                    class="bg-white/60 backdrop-blur-md p-6 rounded-[2.5rem] border-2 border-white flex flex-col items-center gap-2 shadow-lg">
+                    <UIcon :name="stat.icon" :class="[stat.color, 'size-10']" />
+                    <span class="text-3xl font-black text-toned leading-none">{{ stat.value }}</span>
+                    <span class="text-xs font-bold text-muted uppercase tracking-widest">{{ stat.label }}</span>
+                </div>
             </div>
-        </div>
+        </template>
+        <AppEmptyState v-else icon="i-ph-chart-bar-duotone" title="No Stats Available!" color="violet"
+            message="Seed the data to see your full learning profile stats." />
 
         <!-- Badges Section -->
         <div class="bg-white/60 backdrop-blur-md p-8 rounded-[3rem] border-2 border-white shadow-xl">
@@ -59,15 +63,19 @@ const recentBadges = [
                 <UIcon name="i-ph-medal-duotone" class="text-pink-500" />
                 Recent Badges
             </h2>
-            <div class="flex flex-wrap gap-6 justify-center">
-                <div v-for="badge in recentBadges" :key="badge.name" class="flex flex-col items-center gap-3 group">
-                    <div
-                        :class="[badge.color, 'p-6 rounded-3xl shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500']">
-                        <UIcon :name="badge.icon" class="text-white size-12 flex" />
+            <template v-if="isSeeded">
+                <div class="flex flex-wrap gap-6 justify-center">
+                    <div v-for="badge in PROFILE_BADGES" :key="badge.name" class="flex flex-col items-center gap-3 group">
+                        <div
+                            :class="[badge.color, 'p-6 rounded-3xl shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500']">
+                            <UIcon :name="badge.icon" class="text-white size-12 flex" />
+                        </div>
+                        <span class="font-black text-toned">{{ badge.name }}</span>
                     </div>
-                    <span class="font-black text-toned">{{ badge.name }}</span>
                 </div>
-            </div>
+            </template>
+            <AppEmptyState v-else icon="i-ph-medal-duotone" title="No Badges Earned!" color="pink"
+                message="Complete adventures and lessons to earn your first badge!" />
         </div>
     </div>
 </template>

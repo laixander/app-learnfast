@@ -8,6 +8,25 @@ const navLinks = [
     { label: 'Adventures', to: '/adventures', icon: 'i-ph-mountains-duotone', color: 'success' },
     { label: 'Shop', to: '/shop', icon: 'i-ph-storefront-duotone', color: 'info' }
 ]
+
+const fabOpen = ref(false)
+
+const { seedData, clearData } = useUserStore()
+
+const fabActions = [
+    {
+        label: 'Seed Data',
+        icon: 'i-ph-database-duotone',
+        color: 'bg-emerald-500 hover:bg-emerald-600',
+        onClick: () => { seedData(); fabOpen.value = false }
+    },
+    {
+        label: 'Clear Data',
+        icon: 'i-ph-trash-duotone',
+        color: 'bg-rose-500 hover:bg-rose-600',
+        onClick: () => { clearData(); fabOpen.value = false }
+    }
+]
 </script>
 
 <template>
@@ -62,6 +81,41 @@ const navLinks = [
             </UContainer>
         </UMain>
 
+        <!-- FAB Menu -->
+        <div class="fixed bottom-8 right-8 z-50">
+            <!-- Backdrop -->
+            <Transition name="fab-backdrop">
+                <div v-if="fabOpen" class="fixed inset-0 bg-black/10 backdrop-blur-[2px] -z-10"
+                    @click="fabOpen = false" />
+            </Transition>
+
+            <!-- Action Items — absolutely positioned above the main button -->
+            <div class="absolute bottom-20 right-0 flex flex-col items-end gap-3">
+                <TransitionGroup name="fab-item" tag="div" class="flex flex-col items-end gap-3">
+                    <div v-if="fabOpen" v-for="(action, i) in fabActions" :key="action.label"
+                        class="flex items-center gap-3" :style="{ transitionDelay: `${i * 60}ms` }">
+                        <!-- Label Pill -->
+                        <span
+                            class="bg-white text-neutral-800 font-black text-sm px-4 py-2 rounded-full shadow-xl ring-2 ring-white/80 whitespace-nowrap">
+                            {{ action.label }}
+                        </span>
+                        <!-- Action Button -->
+                        <button @click="action.onClick"
+                            :class="[action.color, 'size-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 text-white']">
+                            <UIcon :name="action.icon" class="size-6" />
+                        </button>
+                    </div>
+                </TransitionGroup>
+            </div>
+
+            <!-- Main FAB Toggle -->
+            <button @click="fabOpen = !fabOpen"
+                class="size-16 rounded-full bg-linear-to-br from-primary-500 to-violet-600 shadow-2xl shadow-primary-500/40 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 active:scale-95 ring-4 ring-white"
+                :class="fabOpen ? 'rotate-45 shadow-violet-600/50' : ''">
+                <UIcon name="i-ph-plus-bold" class="size-7 transition-transform duration-300" />
+            </button>
+        </div>
+
         <UFooter class="mt-auto py-8">
             <template #left>
                 <span class="text-sm text-muted font-medium">© {{ new Date().getFullYear() }} LearnFast!
@@ -76,3 +130,26 @@ const navLinks = [
         </UFooter>
     </div>
 </template>
+
+<style scoped>
+/* FAB item enter/leave transitions */
+.fab-item-enter-active,
+.fab-item-leave-active {
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.fab-item-enter-from,
+.fab-item-leave-to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.8);
+}
+
+/* Backdrop fade */
+.fab-backdrop-enter-active,
+.fab-backdrop-leave-active {
+    transition: opacity 0.2s ease;
+}
+.fab-backdrop-enter-from,
+.fab-backdrop-leave-to {
+    opacity: 0;
+}
+</style>

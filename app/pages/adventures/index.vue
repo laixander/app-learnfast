@@ -4,6 +4,7 @@ definePageMeta({
 })
 
 const { categories, adventures } = useAdventures()
+const { isSeeded } = useUserStore()
 const selectedCategory = ref('All')
 
 const filteredAdventures = computed(() => {
@@ -21,7 +22,7 @@ const filteredAdventures = computed(() => {
                 </h1>
                 <p class="text-xl text-muted font-medium">Where will you go next, Felix?</p>
             </div>
-            <div
+            <div v-if="isSeeded"
                 class="flex gap-2 bg-white/60 backdrop-blur-md p-2 rounded-2xl border-2 border-white overflow-x-auto no-scrollbar">
                 <UButton v-for="cat in categories" :key="cat.name" :label="cat.name" :icon="cat.icon" variant="ghost"
                     color="neutral" class="font-bold px-6 py-2 rounded-xl whitespace-nowrap transition-all duration-300"
@@ -30,7 +31,7 @@ const filteredAdventures = computed(() => {
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div v-if="isSeeded" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <UCard v-for="adv in filteredAdventures" :key="adv.title"
                 class="group hover:ring-8 hover:ring-primary-500/20 transition-all duration-500 rounded-[3rem] border-0 shadow-2xl overflow-hidden relative"
                 :ui="{ body: 'p-10 flex flex-col gap-6' }">
@@ -60,5 +61,7 @@ const filteredAdventures = computed(() => {
                 </div>
             </UCard>
         </div>
+        <AppEmptyState v-else icon="i-ph-mountains-duotone" title="No Adventures Found!" color="indigo"
+            message="Your adventure map is currently empty. Seed the data to start your journey!" />
     </div>
 </template>

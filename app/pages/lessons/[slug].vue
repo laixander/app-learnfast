@@ -5,10 +5,16 @@ definePageMeta({
 
 const route = useRoute()
 const { lessons } = useLessons()
+const { isSeeded } = useUserStore()
 
 const lesson = computed(() => {
     return lessons.find(l => l.slug === route.params.slug)
 })
+
+// Redirect if data is cleared
+watch(isSeeded, (newVal) => {
+    if (!newVal) navigateTo('/lessons')
+}, { immediate: true })
 
 if (!lesson.value) {
     throw createError({ statusCode: 404, statusMessage: 'Lesson not found' })

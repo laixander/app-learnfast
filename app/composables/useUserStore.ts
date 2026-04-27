@@ -1,0 +1,158 @@
+import { DEFAULT_QUESTS, DEFAULT_NOTIFICATIONS } from '~/constants/gameData'
+
+// ============================================================
+// useUserStore — Global reactive user state via Nuxt useState
+// useState keeps values shared across all pages in the session
+// ============================================================
+
+export const useUserStore = () => {
+    // --- User Profile ---
+    const user = useState('user', () => ({
+        name: 'Felix',
+        level: 12,
+        avatar: 'Felix',
+        title: 'Master of Space and Math'
+    }))
+
+    // --- Core Stats (XP, Coins, Badges, Streak) ---
+    const stats = useState('user-stats', () => ({
+        xp: 2450,
+        coins: 120,
+        badges: 12,
+        streak: 5,
+        // Extended profile stats
+        totalXp: '15.4k',
+        lessonsDone: 42,
+        friends: 8
+    }))
+
+    // --- Daily Quests (reactive, toggled per session) ---
+    const quests = useState('user-quests', () =>
+        DEFAULT_QUESTS.map(q => ({ ...q }))
+    )
+
+    // --- Global Notifications ---
+    const notifications = useState('user-notifications', () =>
+        DEFAULT_NOTIFICATIONS.map(n => ({ ...n, read: false }))
+    )
+
+    // --- Seeder state — controls whether data is populated or empty ---
+    // Defaults to false so the app starts empty as requested
+    const isSeeded = useState('seeded', () => false)
+
+    // Sync with LocalStorage on the client
+    if (import.meta.client) {
+        const stored = localStorage.getItem('learnfast-seeded')
+        if (stored !== null) {
+            isSeeded.value = stored === 'true'
+        }
+
+        watch(isSeeded, (newVal) => {
+            localStorage.setItem('learnfast-seeded', newVal.toString())
+        }, { immediate: true })
+    }
+
+    // --- Computed Helpers ---
+    const canClaim = computed(() =>
+        quests.value.some(q => q.done && !q.claimed)
+    )
+
+    // --- Actions ---
+    const toggleQuest = (index: number) => {
+        const quest = quests.value[index]
+        if (!quest || quest.claimed) return
+        quest.done = !quest.done
+    }
+
+    const markNoteRead = (id: number) => {
+        const note = notifications.value.find(n => n.id === id)
+        if (note) note.read = true
+    }
+
+    const toggleNoteRead = (id: number) => {
+        const note = notifications.value.find(n => n.id === id)
+        if (note) note.read = !note.read
+    }
+
+    const deleteNote = (id: number) => {
+        notifications.value = notifications.value.filter(n => n.id !== id)
+    }
+
+    const clearAllNotes = () => {
+        notifications.value = []
+    }
+
+    const claimAllRewards = () => {
+        const toast = useToast()
+        let xpGained = 0
+        let coinsGained = 0
+        let badgesGained = 0
+
+        quests.value.forEach(q => {
+            if (q.done && !q.claimed) {
+                if (q.rewardType === 'xp') xpGained += q.rewardValue
+                if (q.rewardType === 'coins') coinsGained += q.rewardValue
+                if (q.rewardType === 'badges') badgesGained += q.rewardValue
+                q.claimed = true
+            }
+        })
+
+        if (xpGained > 0 || coinsGained > 0 || badgesGained > 0) {
+            stats.value.xp += xpGained
+            stats.value.coins += coinsGained
+            stats.value.badges += badgesGained
+
+            toast.add({
+                title: 'Rewards Claimed!',
+                description: `You earned ${xpGained > 0 ? xpGained + ' XP ' : ''}${coinsGained > 0 ? coinsGained + ' Coins ' : ''}${badgesGained > 0 ? badgesGained + ' Badge' : ''}!`,
+                icon: 'i-ph-gift-duotone',
+                color: 'primary'
+            })
+        }
+    }
+
+    const seedData = () => {
+        const toast = useToast()
+        isSeeded.value = true
+        // Reset quests and notifications to default seeded state
+        quests.value = DEFAULT_QUESTS.map(q => ({ ...q }))
+        notifications.value = DEFAULT_NOTIFICATIONS.map(n => ({ ...n, read: false }))
+        toast.add({
+            title: '✅ Data Seeded!',
+            description: 'All app data has been populated successfully.',
+            icon: 'i-ph-database-duotone',
+            color: 'success'
+        })
+    }
+
+    const clearData = () => {
+        const toast = useToast()
+        isSeeded.value = false
+        // Clear reactive session data
+        quests.value = []
+        notifications.value = []
+        toast.add({
+            title: '🗑️ Data Cleared!',
+            description: 'All app data has been removed. Empty states are now visible.',
+            icon: 'i-ph-trash-duotone',
+            color: 'error'
+        })
+    }
+
+    return {
+        user,
+        stats,
+        quests,
+        notifications,
+        isSeeded,
+        canClaim,
+        toggleQuest,
+        markNoteRead,
+        toggleNoteRead,
+        deleteNote,
+        clearAllNotes,
+        claimAllRewards,
+        seedData,
+        clearData
+    }
+}
