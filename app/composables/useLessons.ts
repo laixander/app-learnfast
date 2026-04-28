@@ -1,144 +1,95 @@
+import type { Lesson } from '~/types/lessons'
+import { lessonBanks } from '~/constants/lessonBanks'
+
+import { MANUAL_LESSONS } from '~/constants/lessons'
+
 export const useLessons = () => {
-    const lessons = [
-        {
-            slug: 'intro-to-planets',
-            title: 'Introduction to Planets',
-            category: 'Science',
-            level: 'Beginner',
-            xp: 500,
-            icon: 'i-ph-planet-duotone',
-            color: 'bg-indigo-500',
-            steps: [
-                {
-                    title: 'The Sun is the Star!',
-                    content: 'Did you know the Sun is actually a giant star? It sits right in the center of our solar system and keeps all the planets warm.',
-                    icon: 'i-ph-sun-duotone',
-                    color: 'text-yellow-500'
-                },
-                {
-                    title: 'Rocky Planets',
-                    content: 'The first four planets - Mercury, Venus, Earth, and Mars - are made of rock. We live on Earth, the only planet with liquid water!',
-                    icon: 'i-ph-mountains-duotone',
-                    color: 'text-orange-500'
-                },
-                {
-                    title: 'Gas Giants',
-                    content: 'Jupiter and Saturn are HUGE! They are mostly made of gas and don\'t have a solid surface to stand on. Saturn has beautiful rings made of ice!',
-                    icon: 'i-ph-cloud-duotone',
-                    color: 'text-blue-400'
-                }
-            ],
-            quiz: [
-                {
-                    question: 'Which planet do we live on?',
-                    options: ['Mars', 'Earth', 'Jupiter', 'The Moon'],
-                    answer: 'Earth'
-                },
-                {
-                    question: 'What is the Sun?',
-                    options: ['A Planet', 'A Star', 'A Moon', 'A Comet'],
-                    answer: 'A Star'
-                }
-            ]
-        },
-        {
-            slug: 'addition-fun',
-            title: 'Addition Fun',
-            category: 'Math',
-            level: 'Easy',
-            xp: 300,
-            icon: 'i-ph-plus-circle-duotone',
-            color: 'bg-emerald-500',
-            steps: [
-                {
-                    title: 'What is Addition?',
-                    content: 'Addition is when you put two or more groups together to find out how many there are in total. We use the plus (+) sign!',
-                    icon: 'i-ph-plus-bold',
-                    color: 'text-emerald-500'
-                },
-                {
-                    title: 'One plus One',
-                    content: 'If you have one apple and your friend gives you another one, you now have two apples! 1 + 1 = 2.',
-                    icon: 'i-ph-apple-podcasts-logo-duotone',
-                    color: 'text-red-500'
-                }
-            ],
-            quiz: [
-                {
-                    question: 'What is 2 + 2?',
-                    options: ['3', '4', '5', '6'],
-                    answer: '4'
-                },
-                {
-                    question: 'What sign do we use for addition?',
-                    options: ['-', '+', 'x', '/'],
-                    answer: '+'
-                }
-            ]
-        },
-        {
-            slug: 'dino-fossils',
-            title: 'Dino Fossils',
-            category: 'History',
-            level: 'Intermediate',
-            xp: 750,
-            icon: 'i-ph-butterfly-duotone',
-            color: 'bg-rose-500',
-            steps: [
-                {
-                    title: 'What are Fossils?',
-                    content: 'Fossils are the remains of plants and animals that lived a long, long time ago. They turned into rock over millions of years!',
-                    icon: 'i-ph-scroll-duotone',
-                    color: 'text-amber-700'
-                },
-                {
-                    title: 'Paleontologists',
-                    content: 'These are scientists who dig up fossils to learn how dinosaurs lived. They use brushes and small tools to be very careful.',
-                    icon: 'i-ph-detective-fill',
-                    color: 'text-indigo-600'
-                }
-            ],
-            quiz: [
-                {
-                    question: 'What do fossils turn into over time?',
-                    options: ['Water', 'Rock', 'Dust', 'Ice'],
-                    answer: 'Rock'
-                }
-            ]
-        },
-        {
-            slug: 'color-mixing',
-            title: 'Color Mixing',
-            category: 'Art',
-            level: 'Easy',
-            xp: 250,
-            icon: 'i-ph-palette-duotone',
-            color: 'bg-violet-500',
-            steps: [
-                {
-                    title: 'Primary Colors',
-                    content: 'Red, Blue, and Yellow are primary colors. You can\'t make them by mixing other colors, but you can use them to make ALL other colors!',
-                    icon: 'i-ph-paint-brush-duotone',
-                    color: 'text-primary-500'
-                },
-                {
-                    title: 'Making Green',
-                    content: 'Mix Yellow and Blue together, and you get Green! Just like the grass and leaves on trees.',
-                    icon: 'i-ph-drop-duotone',
-                    color: 'text-emerald-500'
-                }
-            ],
-            quiz: [
-                {
-                    question: 'What color do you get if you mix Yellow and Blue?',
-                    options: ['Purple', 'Green', 'Orange', 'Brown'],
-                    answer: 'Green'
-                }
-            ]
+    const { adventures } = useAdventures()
+
+    // Use manual lessons from constants
+    const allLessons = [...MANUAL_LESSONS]
+
+    adventures.forEach(adv => {
+        const currentLessons = allLessons.filter(l => l.adventureSlug === adv.slug)
+        const remaining = adv.lessons - currentLessons.length
+        const bank = lessonBanks[adv.slug] || []
+
+        for (let i = 0; i < remaining; i++) {
+            const b = bank[i % bank.length]
+            const lessonNumber = currentLessons.length + i + 1
+            allLessons.push({
+                slug: `${adv.slug}-lesson-${lessonNumber}`,
+                adventureSlug: adv.slug,
+                title: b?.title || `${adv.title} Chapter ${lessonNumber}`,
+                category: adv.category,
+                level: b?.level || 'Intermediate',
+                xp: b?.xp || 250,
+                icon: b?.icon || adv.icon,
+                color: adv.color,
+                steps: [
+                    {
+                        title: b?.title || 'Mastery Concept',
+                        content: b?.content || `Explore ${adv.title} in this exciting lesson!`,
+                        icon: b?.icon || 'i-ph-sparkle-duotone',
+                        color: 'text-primary-500'
+                    }
+                ],
+                quiz: [
+                    {
+                        question: b?.quizQ || `What did you learn about ${adv.title}?`,
+                        options: b?.quizOpts || ['Everything!', 'A lot!', 'So much!', 'All of the above!'],
+                        answer: b?.quizA || 'All of the above!'
+                    }
+                ]
+            })
         }
-    ]
+    })
+
+    const { completedLessons } = useUserStore()
+
+    // Calculate status for each lesson based on completed lessons
+    allLessons.forEach(lesson => {
+        const adv = adventures.find(a => a.slug === lesson.adventureSlug)
+        if (!adv) {
+            lesson.status = 'locked'
+            return
+        }
+
+        const advLessons = allLessons.filter(l => l.adventureSlug === adv.slug)
+        const lessonIndex = advLessons.indexOf(lesson)
+        
+        // Check how many lessons in this adventure are completed
+        const completedCount = advLessons.filter(l => completedLessons.value.includes(l.slug)).length
+        
+        if (completedLessons.value.includes(lesson.slug)) {
+            lesson.status = 'completed'
+        } else if (lessonIndex === completedCount) {
+            // It's the next lesson in the sequence. 
+            // If the user hasn't completed ANY lessons in this adventure yet, and the original progress was 0, keep it locked until they start from the hub.
+            // But if they have completed at least one, or the adventure is partially started (like Space Explorer at 65%), it's 'current'.
+            if (completedCount === 0 && adv.progress === 0) {
+                lesson.status = 'locked'
+            } else {
+                lesson.status = 'current'
+            }
+        } else {
+            lesson.status = 'locked'
+        }
+    })
+
+    const getAdventureProgress = (adventureSlug: string) => {
+        const advLessons = allLessons.filter(l => l.adventureSlug === adventureSlug)
+        if (advLessons.length === 0) return 0
+        const completedCount = advLessons.filter(l => completedLessons.value.includes(l.slug)).length
+        
+        // If the user hasn't seeded/completed anything yet but the adventure has a hardcoded initial progress, we can keep it for demo purposes.
+        // Actually, returning the real calculated progress is better now that we track it.
+        return Math.round((completedCount / advLessons.length) * 100)
+    }
 
     return {
-        lessons
+        lessons: allLessons,
+        getAdventureProgress
     }
 }
+

@@ -41,10 +41,20 @@ export const useUserStore = () => {
     const seededCookie = useCookie('learnfast-seeded', { default: () => 'false', watch: true })
     const isSeeded = useState('seeded', () => seededCookie.value === 'true')
 
+    // --- Active Adventure context ---
+    const activeAdventureSlug = useState('active-adventure-slug', () => '')
+
+    // --- Progress Tracking ---
+    const completedLessonsCookie = useCookie<string[]>('learnfast-completed-lessons', { default: () => [], watch: true })
+    const completedLessons = useState<string[]>('completed-lessons', () => completedLessonsCookie.value || [])
+
     // Sync state to cookie
     watch(isSeeded, (newVal) => {
         seededCookie.value = newVal.toString()
     })
+    watch(completedLessons, (newVal) => {
+        completedLessonsCookie.value = newVal
+    }, { deep: true })
 
     // --- Computed Helpers ---
     const canClaim = computed(() =>
@@ -105,12 +115,20 @@ export const useUserStore = () => {
         }
     }
 
+    const markLessonCompleted = (slug: string) => {
+        if (!completedLessons.value.includes(slug)) {
+            completedLessons.value.push(slug)
+        }
+    }
+
     const seedData = () => {
         const toast = useToast()
         isSeeded.value = true
         // Reset quests and notifications to default seeded state
         quests.value = DEFAULT_QUESTS.map(q => ({ ...q }))
         notifications.value = DEFAULT_NOTIFICATIONS.map(n => ({ ...n, read: false }))
+        // Optionally pre-seed some completed lessons for demo
+        completedLessons.value = ['intro-to-planets', 'moon-mission']
         toast.add({
             title: '✅ Data Seeded!',
             description: 'All app data has been populated successfully.',
@@ -125,6 +143,7 @@ export const useUserStore = () => {
         // Clear reactive session data
         quests.value = []
         notifications.value = []
+        completedLessons.value = []
         toast.add({
             title: '🗑️ Data Cleared!',
             description: 'All app data has been removed. Empty states are now visible.',
@@ -145,6 +164,9 @@ export const useUserStore = () => {
         toggleNoteRead,
         deleteNote,
         clearAllNotes,
+        activeAdventureSlug,
+        completedLessons,
+        markLessonCompleted,
         claimAllRewards,
         seedData,
         clearData

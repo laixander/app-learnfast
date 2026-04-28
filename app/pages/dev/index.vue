@@ -69,6 +69,12 @@ const tabs = [
                                         <span class="text-neutral-600 dark:text-neutral-400">Reusable
                                             domain-specific UI components.</span>
                                     </li>
+                                    <li class="flex items-start gap-3">
+                                        <UBadge variant="subtle" size="md" class="mt-0.5 font-mono">app/types/
+                                        </UBadge>
+                                        <span class="text-neutral-600 dark:text-neutral-400">Centralized TypeScript
+                                            interfaces for consistent data modeling.</span>
+                                    </li>
                                 </ul>
                             </UCard>
 
@@ -83,7 +89,9 @@ const tabs = [
                                         class="bg-neutral-100 text-blue-500 px-1 py-0.5 rounded">ref</code>, <code
                                         class="bg-neutral-100 text-blue-500 px-1 py-0.5 rounded">computed</code>)
                                     within component script blocks.
-                                    Shared logic and global state are orchestrated through Nuxt composables and
+                                    Shared logic and global state are orchestrated through Nuxt composables,
+                                    centralized <code
+                                        class="bg-neutral-100 text-blue-500 px-1 py-0.5 rounded">app/types</code>, and
                                     layout-level provision.
                                 </p>
                             </UCard>
@@ -507,6 +515,26 @@ const tabs = [
                                         reaching certain milestones. Displayed on the user Profile and Leaderboard.
                                     </p>
                                 </UCard>
+                                <UCard
+                                    class="bg-white dark:bg-neutral-800 shadow-sm border border-neutral-100 dark:border-neutral-700">
+                                    <h4 class="text-lg font-bold flex items-center gap-2 text-fuchsia-600 mb-2">
+                                        <UIcon name="i-ph-test-tube-duotone" class="text-fuchsia-400 size-5" /> AI
+                                        Laboratory
+                                    </h4>
+                                    <p class="text-neutral-500 text-sm leading-relaxed">The AI-powered wizard where
+                                        students can generate custom adventures based on their own interests and
+                                        prompts.</p>
+                                </UCard>
+                                <UCard
+                                    class="bg-white dark:bg-neutral-800 shadow-sm border border-neutral-100 dark:border-neutral-700">
+                                    <h4 class="text-lg font-bold flex items-center gap-2 text-fuchsia-600 mb-2">
+                                        <UIcon name="i-ph-cpu-duotone" class="text-fuchsia-400 size-5" /> AI Lesson
+                                        Engine
+                                    </h4>
+                                    <p class="text-neutral-500 text-sm leading-relaxed">The core generation logic
+                                        that transforms raw text, files, or images into interactive learning modules
+                                        and quizzes.</p>
+                                </UCard>
                             </div>
                         </div>
 
@@ -608,6 +636,21 @@ const tabs = [
                                             class="text-violet-600 font-mono text-xs bg-violet-50 px-1 rounded">lessons/[slug].vue</code>
                                         to unlock advanced Adventures.</p>
                                 </div>
+                                <div class="relative">
+                                    <div
+                                        class="absolute -left-[41px] top-1 bg-white dark:bg-neutral-900 ring-2 ring-violet-500 rounded-full size-4">
+                                    </div>
+                                    <h4 class="font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                                        <UIcon name="i-ph-number-circle-four-fill" class="text-violet-500" /> Phase
+                                        4: Creative Mastery & Personalized Learning
+                                    </h4>
+                                    <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-2">Power users
+                                        utilize the <code
+                                            class="text-violet-600 font-mono text-xs bg-violet-50 px-1 rounded">AI Adventure Laboratory</code>
+                                        to generate their own missions. They upload documents to the <code
+                                            class="text-violet-600 font-mono text-xs bg-violet-50 px-1 rounded">AI Lesson Engine</code>
+                                        to convert schoolwork into gamified study sessions.</p>
+                                </div>
                             </div>
                         </UCard>
 
@@ -672,9 +715,27 @@ interface DailyQuest {
                                     class="absolute -left-2 top-1.5 bg-rose-500 rounded-full size-4 ring-4 ring-neutral-50 dark:ring-neutral-900">
                                 </div>
                                 <div class="flex items-center gap-3 mb-2">
-                                    <UBadge color="rose" variant="subtle" size="md">v1.3.0</UBadge>
-                                    <span class="text-xs font-bold text-neutral-400 uppercase">Apr 27, 2026</span>
+                                    <UBadge color="rose" variant="subtle" size="md">v1.4.0</UBadge>
+                                    <span class="text-xs font-bold text-neutral-400 uppercase">Apr 28, 2026</span>
                                     <UBadge color="primary" variant="solid" size="sm">Current</UBadge>
+                                </div>
+                                <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-2">AI Laboratory &
+                                    Type Systems</h3>
+                                <ul class="list-disc list-inside text-neutral-600 dark:text-neutral-400 space-y-1">
+                                    <li>Launched **AI Adventure Laboratory** wizard with dynamic card generation.</li>
+                                    <li>Integrated **AI Lesson Engine** with file-based content generation and onboarding.</li>
+                                    <li>Refactored **Quiz Type System** with centralized interfaces and interactive modals.</li>
+                                    <li>Enhanced **Adventure Card Aesthetics** with premium hover effects and dynamic tints.</li>
+                                </ul>
+                            </div>
+
+                            <div class="relative pl-8">
+                                <div
+                                    class="absolute -left-2 top-1.5 bg-neutral-300 dark:bg-neutral-600 rounded-full size-4 ring-4 ring-neutral-50 dark:ring-neutral-900">
+                                </div>
+                                <div class="flex items-center gap-3 mb-2">
+                                    <UBadge color="neutral" variant="subtle" size="md">v1.3.0</UBadge>
+                                    <span class="text-xs font-bold text-neutral-400 uppercase">Apr 27, 2026</span>
                                 </div>
                                 <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-2">Centralized
                                     State &

@@ -1,13 +1,19 @@
-<script setup>
+<script setup lang="ts">
 const route = useRoute()
 const { isScrolled } = useStickyHeader()
 
 const navLinks = [
-    { label: 'Home', to: '/', icon: 'i-ph-house-duotone', color: 'primary' },
-    { label: 'Dashboard', to: '/dashboard', icon: 'i-ph-layout-duotone', color: 'secondary' },
-    { label: 'Adventures', to: '/adventures', icon: 'i-ph-mountains-duotone', color: 'success' },
-    { label: 'Shop', to: '/shop', icon: 'i-ph-storefront-duotone', color: 'info' }
-]
+    { label: 'Home', to: '/', icon: 'i-ph-house-duotone', color: 'primary', match: ['/'] },
+    { label: 'Dashboard', to: '/dashboard', icon: 'i-ph-layout-duotone', color: 'secondary', match: ['/dashboard'] },
+    { label: 'Adventures', to: '/adventures', icon: 'i-ph-mountains-duotone', color: 'success', match: ['/adventures', '/lessons'] },
+    { label: 'Shop', to: '/shop', icon: 'i-ph-storefront-duotone', color: 'info', match: ['/shop'] }
+] as const
+
+const isNavActive = (link: typeof navLinks[number]) => {
+    // Exact match for Home to avoid matching everything
+    if (link.to === '/') return route.path === '/'
+    return link.match.some(prefix => route.path.startsWith(prefix))
+}
 
 const fabOpen = ref(false)
 
@@ -61,9 +67,9 @@ const fabActions = [
 
             <div class="hidden md:flex items-center gap-4">
                 <UButton v-for="link in navLinks" :key="link.to" :to="link.to" :label="link.label" :icon="link.icon"
-                    :variant="route.path === link.to ? 'solid' : 'ghost'" :color="link.color"
+                    :variant="isNavActive(link) ? 'solid' : 'ghost'" :color="link.color"
                     class="font-black rounded-xl px-5 py-2.5 transition-all duration-300" :class="[
-                        route.path === link.to
+                        isNavActive(link)
                             ? 'shadow-lg shadow-primary-500/20 scale-105'
                             : 'hover:scale-105 active:scale-95'
                     ]" />

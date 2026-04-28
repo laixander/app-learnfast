@@ -5,11 +5,15 @@ definePageMeta({
 
 const route = useRoute()
 const { adventures } = useAdventures()
-const { isSeeded } = useUserStore()
+const { isSeeded, activeAdventureSlug } = useUserStore()
 
 const adventure = computed(() => {
     return adventures.find(a => a.slug === route.params.slug)
 })
+
+watch(adventure, (newVal) => {
+    if (newVal) activeAdventureSlug.value = newVal.slug
+}, { immediate: true })
 
 // Redirect if data is cleared
 watch(isSeeded, (newVal) => {
@@ -20,10 +24,45 @@ if (!adventure.value) {
     throw createError({ statusCode: 404, statusMessage: 'Adventure not found' })
 }
 
-const { lessons } = useLessons()
+const { lessons, getAdventureProgress } = useLessons()
 
-const firstLesson = computed(() => {
-    return lessons.find(l => l.category === adventure.value?.category)
+const dynamicProgress = computed(() => {
+    if (!adventure.value) return 0
+    return getAdventureProgress(adventure.value.slug)
+})
+
+const adventureLessons = computed(() => {
+    return lessons.filter(l => l.adventureSlug === adventure.value?.slug)
+})
+
+const timelineItems = computed(() => {
+    return adventureLessons.value
+})
+
+const nextTimelineItem = computed(() => {
+    // Find the first lesson that is 'current' (the next one to do)
+    const currentLesson = adventureLessons.value.find(l => l.status === 'current')
+    if (currentLesson) return { type: 'lesson' as const, lesson: currentLesson }
+    // If no current lesson, check if all are completed (ready for final exam)
+    if (adventureLessons.value.length > 0 && adventureLessons.value.every(l => l.status === 'completed')) {
+        return { type: 'final-exam' as const, lesson: null }
+    }
+    // Fallback to first lesson
+    return adventureLessons.value.length > 0 
+        ? { type: 'lesson' as const, lesson: adventureLessons.value[0] } 
+        : null
+})
+
+const startButtonLink = computed(() => {
+    if (!nextTimelineItem.value) return `/lessons?adventure=${adventure.value?.slug}`
+    if (nextTimelineItem.value.type === 'final-exam') return `/lessons?adventure=${adventure.value?.slug}`
+    return `/lessons/${nextTimelineItem.value.lesson?.slug}`
+})
+
+const startButtonLabel = computed(() => {
+    if (dynamicProgress.value === 0) return 'Start Adventure! →'
+    if (dynamicProgress.value >= 100) return 'Take Final Exam! →'
+    return 'Continue Adventure! →'
 })
 
 const tagline = computed(() => {
@@ -31,7 +70,7 @@ const tagline = computed(() => {
 })
 
 const progressMessage = computed(() => {
-    return (adventure.value?.progress ?? 0) > 0
+    return dynamicProgress.value > 0
         ? 'You are doing great! Keep going to earn your badge.'
         : 'Start today to begin your journey!'
 })
@@ -150,8 +189,8 @@ const progressMessage = computed(() => {
                             </div>
 
                             <div class="flex flex-col gap-4 items-center mt-4">
-                                <UButton :to="firstLesson ? `/lessons/${firstLesson.slug}` : '/lessons'"
-                                    label="Start Adventure! →" size="xl" color="neutral"
+                                <UButton :to="startButtonLink"
+                                    :label="startButtonLabel" size="xl" color="neutral"
                                     class="bg-white text-primary-600 font-black px-16 py-6 rounded-[2.5rem] text-2xl hover:scale-105 active:scale-95 transition-all shadow-2xl" />
                                 <p
                                     class="text-white/60 text-sm font-bold uppercase tracking-widest flex items-center gap-2">
@@ -174,11 +213,11 @@ const progressMessage = computed(() => {
                         <div class="flex flex-col gap-4">
                             <div class="flex justify-between items-end">
                                 <span class="text-lg font-bold text-muted">Adventure Score</span>
-                                <span class="text-3xl font-black text-primary-600">{{ adventure.progress }}%</span>
+                                <span class="text-3xl font-black text-primary-600">{{ dynamicProgress }}%</span>
                             </div>
                             <div class="h-6 bg-primary-100 rounded-full overflow-hidden p-1.5 shadow-inner">
                                 <div class="h-full rounded-full transition-all duration-1000" :class="adventure.color"
-                                    :style="{ width: `${adventure.progress}%` }" />
+                                    :style="{ width: `${dynamicProgress}%` }" />
                             </div>
                             <p class="text-sm font-medium text-muted mt-2">
                                 {{ progressMessage }}
@@ -213,6 +252,64 @@ const progressMessage = computed(() => {
                                     master!</span>
                             </li>
                         </ul>
+                    </div>
+
+                    <!-- Lesson Timeline -->
+                    <div
+                        class="bg-white/60 backdrop-blur-xl p-8 rounded-[3rem] border-4 border-white shadow-xl flex flex-col gap-6">
+                        <h3 class="text-2xl font-black text-toned flex items-center gap-3">
+                            <UIcon name="i-ph-list-checks-duotone" class="text-primary-500" />
+                            Lesson Timeline
+                        </h3>
+                        <div class="flex flex-col gap-6 relative">
+                            <!-- Timeline Line -->
+                            <div class="absolute left-4.5 top-4 bottom-4 w-1 bg-primary-100 rounded-full z-0" />
+
+                            <template v-for="(item, index) in timelineItems" :key="index">
+                                <!-- Lesson Step -->
+                                <div class="flex gap-4 items-center relative z-10">
+                                    <div
+                                        class="size-9 rounded-full flex items-center justify-center shadow-lg ring-4 ring-white shrink-0 bg-primary-500">
+                                        <UIcon :name="item.icon" class="text-white size-5" />
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <div
+                                                class="text-[10px] font-black text-primary-600 uppercase tracking-widest leading-none">
+                                                Lesson {{ index + 1 }}</div>
+                                        </div>
+                                        <div class="font-bold text-toned leading-tight text-sm">{{ item.title }}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Mini Quiz (Every 2nd lesson) -->
+                                <div v-if="(index + 1) % 2 === 0"
+                                    class="flex gap-4 items-center relative z-10 ml-1">
+                                    <div
+                                        class="size-7 rounded-full bg-yellow-400 flex items-center justify-center shadow-md ring-2 ring-white shrink-0">
+                                        <UIcon name="i-ph-question-bold" class="text-yellow-900 size-4" />
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-[10px] font-black text-yellow-600 uppercase tracking-widest">
+                                            Knowledge Quiz</div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Final Quiz -->
+                            <div class="flex gap-4 items-center relative z-10">
+                                <div
+                                    class="size-9 rounded-full bg-linear-to-br from-orange-400 to-rose-500 flex items-center justify-center shadow-lg ring-4 ring-white shrink-0">
+                                    <UIcon name="i-ph-trophy-duotone" class="text-white size-5" />
+                                </div>
+                                <div class="flex-1">
+                                    <div
+                                        class="text-[10px] font-black text-orange-600 uppercase tracking-widest leading-none mb-0.5">
+                                        Final Exam</div>
+                                    <div class="font-black text-toned leading-tight text-sm">Mastery Challenge</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

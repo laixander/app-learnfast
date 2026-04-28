@@ -32,34 +32,31 @@ const filteredAdventures = computed(() => {
         </header>
 
         <div v-if="isSeeded" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <UCard v-for="adv in filteredAdventures" :key="adv.title"
-                class="group hover:ring-8 hover:ring-primary-500/20 transition-all duration-500 rounded-[3rem] border-0 shadow-2xl overflow-hidden relative"
-                :ui="{ body: 'p-10 flex flex-col gap-6' }">
-                <div class="flex items-start justify-between">
-                    <div
-                        :class="[adv.color, 'p-6 rounded-[2rem] shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500']">
-                        <UIcon :name="adv.icon" class="text-white size-12 flex" />
+            <!-- AI Magic Creator Card -->
+            <UCard v-if="selectedCategory === 'All' || selectedCategory === 'Science'"
+                class="group hover:ring-4 hover:ring-indigo-500/30 transition-all duration-500 rounded-[2.5rem] border-4 border-dashed border-indigo-200 shadow-xl overflow-hidden relative cursor-pointer bg-indigo-50/30"
+                :ui="{ body: 'p-8 flex flex-col gap-6 relative z-10 h-full' }">
+                <NuxtLink to="/adventures/create" class="absolute inset-0 z-0" />
+                
+                <div class="flex items-start justify-between pointer-events-none">
+                    <div class="bg-indigo-500 p-5 rounded-2xl shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
+                        <UIcon name="i-ph-magic-wand-duotone" class="text-white size-10 flex" />
                     </div>
-                    <div
-                        class="bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full font-black text-primary-600 shadow-md">
-                        {{ adv.progress }}%
-                    </div>
+                    <UBadge color="neutral" variant="solid" class="bg-indigo-100 text-indigo-700 border-indigo-200 font-black rounded-full px-3 animate-pulse">
+                        AI Magic
+                    </UBadge>
                 </div>
-                <div>
-                    <div class="text-sm font-black text-primary-600 uppercase tracking-widest">{{ adv.category }}</div>
-                    <h3 class="text-3xl font-black text-toned leading-tight">{{ adv.title }}</h3>
-                    <p class="text-muted font-medium mt-2 leading-snug">{{ adv.description }}</p>
+
+                <div class="flex flex-col gap-2 flex-1 pointer-events-none">
+                    <h3 class="text-2xl font-black text-toned leading-tight">Create My Own!</h3>
+                    <p class="text-muted font-medium leading-snug">Use AI to build a custom adventure about anything you want!</p>
                 </div>
-                <div class="flex flex-col gap-4 mt-2">
-                    <div class="h-5 bg-primary-100 rounded-full overflow-hidden p-1 shadow-inner">
-                        <div class="h-full rounded-full transition-all duration-1000" :class="adv.color"
-                            :style="{ width: `${adv.progress}%` }" />
-                    </div>
-                    <UButton :to="`/adventures/${adv.slug}`" :label="adv.progress > 0 ? 'Continue' : 'Start Adventure'"
-                        block size="xl" class="font-black rounded-2xl py-4 hover:translate-x-2 transition-transform"
-                        :color="adv.progress > 0 ? 'primary' : 'neutral'" />
-                </div>
+
+                <UButton to="/adventures/create" label="Start Magic →" size="lg" block
+                    class="mt-4 font-black rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-0 relative z-10" />
             </UCard>
+
+            <AdventureCard v-for="adv in filteredAdventures" :key="adv.title" :adventure="adv" />
         </div>
         <AppEmptyState v-else icon="i-ph-mountains-duotone" title="No Adventures Found!" color="indigo"
             message="Your adventure map is currently empty. Seed the data to start your journey!" />

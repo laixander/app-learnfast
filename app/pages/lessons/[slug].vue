@@ -5,15 +5,53 @@ definePageMeta({
 
 const route = useRoute()
 const { lessons } = useLessons()
-const { isSeeded } = useUserStore()
+const { isSeeded, markLessonCompleted } = useUserStore()
 
 const lesson = computed(() => {
     return lessons.find(l => l.slug === route.params.slug)
 })
 
+const nextLesson = computed(() => {
+    if (!lesson.value) return null
+    const advLessons = lessons.filter(l => l.adventureSlug === lesson.value?.adventureSlug)
+    const currentIndex = advLessons.findIndex(l => l.slug === lesson.value?.slug)
+    
+    // After every 2nd lesson (index 1, 3, 5...), the next step in the timeline is a quiz
+    // So we return null to send the user back to the lessons list where the quiz card is unlocked
+    const lessonNumber = currentIndex + 1 // 1-based
+    if (lessonNumber % 2 === 0 && currentIndex < advLessons.length - 1) {
+        // Next in timeline is a Knowledge Quiz, not a lesson
+        return null
+    }
+    
+    if (currentIndex >= 0 && currentIndex < advLessons.length - 1) {
+        return advLessons[currentIndex + 1]
+    }
+    return null
+})
+
+// Determine what to show on the finish screen
+const finishAction = computed(() => {
+    if (!lesson.value) return { label: 'Back to Lessons', to: '/adventures' }
+    const advLessons = lessons.filter(l => l.adventureSlug === lesson.value?.adventureSlug)
+    const currentIndex = advLessons.findIndex(l => l.slug === lesson.value?.slug)
+    const lessonNumber = currentIndex + 1
+
+    if (nextLesson.value) {
+        // Direct to next lesson
+        return { label: 'Next Lesson →', to: `/lessons/${nextLesson.value.slug}` }
+    } else if (lessonNumber % 2 === 0 && currentIndex < advLessons.length - 1) {
+        // Quiz checkpoint - go directly to quiz page
+        return { label: 'Take Quiz! 🧠', to: `/lessons/quiz?adventure=${lesson.value.adventureSlug}&after=${currentIndex}` }
+    } else {
+        // Last lesson - go directly to final exam page
+        return { label: 'Finish Adventure! 🏆', to: `/lessons/exam?adventure=${lesson.value.adventureSlug}` }
+    }
+})
+
 // Redirect if data is cleared
 watch(isSeeded, (newVal) => {
-    if (!newVal) navigateTo('/lessons')
+    if (!newVal) navigateTo('/adventures')
 }, { immediate: true })
 
 if (!lesson.value) {
@@ -32,7 +70,9 @@ const nextStep = () => {
     if (lesson.value && currentStepIndex.value < lesson.value.steps.length - 1) {
         currentStepIndex.value++
     } else {
-        isQuizMode.value = true
+        // Lesson complete — skip inline quiz, mark done
+        isFinished.value = true
+        if (lesson.value) markLessonCompleted(lesson.value.slug)
     }
 }
 
@@ -54,6 +94,9 @@ const submitQuiz = () => {
 
     score.value = correctCount
     isFinished.value = true
+    
+    // Mark as completed globally to unlock next lesson
+    markLessonCompleted(lesson.value.slug)
 }
 
 const progress = computed(() => {
@@ -72,7 +115,7 @@ const progress = computed(() => {
             <header
                 class="flex items-center justify-between bg-white/60 backdrop-blur-md p-6 rounded-3xl border-2 border-white shadow-xl">
                 <div class="flex items-center gap-4">
-                    <UButton to="/lessons" icon="i-ph-arrow-left-bold" variant="ghost" color="neutral"
+                    <UButton :to="`/lessons?adventure=${lesson.adventureSlug}`" icon="i-ph-arrow-left-bold" variant="ghost" color="neutral"
                         class="rounded-2xl" />
                     <div class="flex flex-col">
                         <h1 class="text-2xl font-black text-toned leading-none">{{ lesson.title }}</h1>
@@ -112,7 +155,7 @@ const progress = computed(() => {
                         <div class="flex items-center gap-4 mt-6">
                             <UButton v-if="currentStepIndex > 0" label="Previous" variant="subtle" color="neutral"
                                 size="xl" class="font-black px-10 rounded-2xl" @click="prevStep" />
-                            <UButton :label="currentStepIndex === lesson.steps.length - 1 ? 'Start Quiz!' : 'Next Step'"
+                            <UButton :label="currentStepIndex === lesson.steps.length - 1 ? 'Complete Lesson ✓' : 'Next Step'"
                                 color="primary" size="xl"
                                 class="font-black px-12 py-4 rounded-2xl shadow-xl hover:scale-105" @click="nextStep" />
                         </div>
@@ -161,9 +204,9 @@ const progress = computed(() => {
 
                             <div class="flex gap-4 mt-4">
                                 <div
-                                    class="bg-white/20 backdrop-blur-md px-10 py-6 rounded-3xl border-2 border-white/30 flex flex-col">
-                                    <span class="text-4xl font-black">{{ score }}/{{ lesson.quiz.length }}</span>
-                                    <span class="text-xs font-bold uppercase tracking-widest opacity-70">Correct</span>
+                                    class="bg-white/20 backdrop-blur-md px-10 py-6 rounded-3xl border-2 border-white/30 flex flex-col items-center">
+                                    <UIcon name="i-ph-check-circle-duotone" class="size-10 text-green-300" />
+                                    <span class="text-xs font-bold uppercase tracking-widest opacity-70 mt-1">Completed</span>
                                 </div>
                                 <div
                                     class="bg-yellow-400 text-yellow-900 px-10 py-6 rounded-3xl border-2 border-white flex flex-col">
@@ -173,8 +216,15 @@ const progress = computed(() => {
                                 </div>
                             </div>
 
-                            <UButton to="/lessons" label="Keep Learning!" variant="solid" color="neutral"
+                            <UButton 
+                                :to="finishAction.to" 
+                                :label="finishAction.label" 
+                                variant="solid" color="neutral"
                                 class="bg-white text-primary-600 font-black px-12 py-6 rounded-[2.5rem] text-2xl hover:scale-105 transition-all shadow-2xl mt-6" />
+                            
+                            <NuxtLink :to="`/lessons?adventure=${lesson.adventureSlug}`" class="text-white/80 font-bold hover:text-white hover:underline underline-offset-4 transition-all mt-2">
+                                Back to Lessons List
+                            </NuxtLink>
                         </div>
                     </div>
                 </Transition>

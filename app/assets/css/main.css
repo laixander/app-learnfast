@@ -2,6 +2,8 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+@source "../../../tailwind.config.ts";
+
 @theme {
     --font-sans: 'Sour Gummy', sans-serif;
 
