@@ -2,7 +2,8 @@
 import type { Adventure } from '~/types/adventures'
 
 const props = defineProps<{
-    adventure: Adventure
+    adventure: Adventure,
+    noTruncate?: boolean
 }>()
 
 const { lessons, getAdventureProgress } = useLessons()
@@ -37,8 +38,8 @@ const dynamicProgress = computed(() => {
         <div class="flex flex-col gap-2 pointer-events-none">
             <div v-if="adventure.category" class="text-sm font-black text-primary-600 uppercase tracking-widest">{{
                 adventure.category }}</div>
-            <h3 class="text-2xl font-black text-toned leading-tight">{{ adventure.title }}</h3>
-            <p class="text-muted font-medium leading-snug">{{ adventure.description }}</p>
+            <h3 class="text-2xl font-black text-toned leading-tight" :class="{ 'truncate': !noTruncate }">{{ adventure.title }}</h3>
+            <p class="text-muted font-medium leading-snug" :class="{ 'line-clamp-1': !noTruncate }">{{ adventure.description }}</p>
         </div>
 
         <div class="flex flex-col gap-2">
@@ -49,8 +50,9 @@ const dynamicProgress = computed(() => {
             <UButton
                 :to="dynamicProgress > 0 && currentLesson ? `/lessons/${currentLesson.slug}` : `/adventures/${adventure.slug}`"
                 :label="dynamicProgress > 0 ? 'Continue →' : 'Start Lessons →'" size="lg" block
-                class="mt-2 font-black rounded-xl hover:translate-x-1 transition-transform"
-                :color="adventure.color === 'bg-indigo-500' ? 'primary' : 'neutral'" />
+                class="mt-2 font-black rounded-xl hover:translate-x-1 transition-transform border-0 text-white"
+                :class="adventure.buttonClass"
+                :color="adventure.buttonClass ? undefined : (adventure.color === 'bg-indigo-500' ? 'primary' : 'neutral')" />
 
             <!-- <UButton :to="`/adventures/${adventure.slug}`" label="Continue →" size="lg" block
                 class="mt-2 font-black rounded-xl hover:translate-x-1 transition-transform"

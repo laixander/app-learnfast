@@ -5,7 +5,7 @@ definePageMeta({
     layout: 'dashboard'
 })
 
-const { user, stats, isSeeded } = useUserStore()
+const { user, stats, isSeeded, hasContent } = useUserStore()
 
 const profileStats = computed(() =>
     PROFILE_STAT_CONFIG.map(config => ({
@@ -44,7 +44,7 @@ const profileStats = computed(() =>
         </div>
 
         <!-- Stats Grid -->
-        <template v-if="isSeeded">
+        <template v-if="hasContent">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div v-for="stat in profileStats" :key="stat.label"
                     class="bg-white/60 backdrop-blur-md p-6 rounded-[2.5rem] border-2 border-white flex flex-col items-center gap-2 shadow-lg">
@@ -63,7 +63,7 @@ const profileStats = computed(() =>
                 <UIcon name="i-ph-medal-duotone" class="text-pink-500" />
                 Recent Badges
             </h2>
-            <template v-if="isSeeded">
+            <template v-if="hasContent">
                 <div class="flex flex-wrap gap-6 justify-center">
                     <div v-for="badge in PROFILE_BADGES" :key="badge.name"
                         class="flex flex-col items-center gap-3 group">

@@ -1,4 +1,27 @@
 import { DEFAULT_QUESTS, DEFAULT_NOTIFICATIONS } from '~/constants/gameData'
+import type { Adventure } from '~/types/adventures'
+
+export interface Quest {
+    id: number
+    task: string
+    reward: string
+    done: boolean
+    claimed: boolean
+    rewardValue: number
+    rewardType: 'xp' | 'coins' | 'badges'
+}
+
+export interface Notification {
+    id: number
+    title: string
+    message: string
+    fullMessage?: string
+    time: string
+    icon: string
+    color: string
+    bg: string
+    read: boolean
+}
 
 // ============================================================
 // useUserStore — Global reactive user state via Nuxt useState
@@ -6,60 +29,59 @@ import { DEFAULT_QUESTS, DEFAULT_NOTIFICATIONS } from '~/constants/gameData'
 // ============================================================
 
 export const useUserStore = () => {
-    // --- User Profile ---
-    const user = useState('user', () => ({
-        name: 'Felix',
-        level: 12,
-        avatar: 'Felix',
-        title: 'Master of Space and Math'
-    }))
-
-    // --- Core Stats (XP, Coins, Badges, Streak) ---
-    const stats = useState('user-stats', () => ({
-        xp: 2450,
-        coins: 120,
-        badges: 12,
-        streak: 5,
-        // Extended profile stats
-        totalXp: '15.4k',
-        lessonsDone: 42,
-        friends: 8
-    }))
-
-    // --- Daily Quests (reactive, toggled per session) ---
-    const quests = useState('user-quests', () =>
-        DEFAULT_QUESTS.map(q => ({ ...q }))
-    )
-
-    // --- Global Notifications ---
-    const notifications = useState('user-notifications', () =>
-        DEFAULT_NOTIFICATIONS.map(n => ({ ...n, read: false }))
-    )
-
-    // --- Seeder state — controls whether data is populated or empty ---
-    // Using a cookie so the server knows the seeded state on refresh (prevents hydration mismatch)
+    // --- Persistent State via Cookies ---
+    const userCookie = useCookie('learnfast-user', { 
+        default: () => ({
+            name: 'Explorer',
+            level: 1,
+            avatar: 'Felix',
+            title: 'New Explorer'
+        }), 
+        watch: true 
+    })
+    const statsCookie = useCookie('learnfast-stats', {
+        default: () => ({
+            xp: 0,
+            coins: 0,
+            badges: 0,
+            streak: 0,
+            totalXp: '0',
+            lessonsDone: 0,
+            friends: 0
+        }),
+        watch: true
+    })
+    const questsCookie = useCookie<Quest[]>('learnfast-quests', { default: () => [], watch: true })
+    const notificationsCookie = useCookie<Notification[]>('learnfast-notifications', { default: () => [], watch: true })
     const seededCookie = useCookie('learnfast-seeded', { default: () => 'false', watch: true })
-    const isSeeded = useState('seeded', () => seededCookie.value === 'true')
+    const customAdventuresCookie = useCookie<Adventure[]>('learnfast-custom-adventures', { default: () => [], watch: true })
+    const completedLessonsCookie = useCookie<string[]>('learnfast-completed-lessons', { default: () => [], watch: true })
 
-    // --- Active Adventure context ---
+    // --- Reactive State (useState) initialized from Cookies ---
+    const user = useState('user', () => userCookie.value)
+    const stats = useState('user-stats', () => statsCookie.value)
+    const quests = useState<Quest[]>('user-quests', () => questsCookie.value || [])
+    const notifications = useState<Notification[]>('user-notifications', () => notificationsCookie.value || [])
+    const isSeeded = useState('seeded', () => seededCookie.value === 'true')
+    const customAdventures = useState<Adventure[]>('custom-adventures', () => customAdventuresCookie.value || [])
+    const completedLessons = useState<string[]>('completed-lessons', () => completedLessonsCookie.value || [])
     const activeAdventureSlug = useState('active-adventure-slug', () => '')
 
-    // --- Progress Tracking ---
-    const completedLessonsCookie = useCookie<string[]>('learnfast-completed-lessons', { default: () => [], watch: true })
-    const completedLessons = useState<string[]>('completed-lessons', () => completedLessonsCookie.value || [])
-
-    // Sync state to cookie
-    watch(isSeeded, (newVal) => {
-        seededCookie.value = newVal.toString()
-    })
-    watch(completedLessons, (newVal) => {
-        completedLessonsCookie.value = newVal
-    }, { deep: true })
+    // --- Sync State back to Cookies ---
+    watch(user, (newVal) => { userCookie.value = newVal }, { deep: true })
+    watch(stats, (newVal) => { statsCookie.value = newVal }, { deep: true })
+    watch(quests, (newVal) => { questsCookie.value = newVal }, { deep: true })
+    watch(notifications, (newVal) => { notificationsCookie.value = newVal }, { deep: true })
+    watch(isSeeded, (newVal) => { seededCookie.value = newVal.toString() })
+    watch(customAdventures, (newVal) => { customAdventuresCookie.value = newVal }, { deep: true })
+    watch(completedLessons, (newVal) => { completedLessonsCookie.value = newVal }, { deep: true })
 
     // --- Computed Helpers ---
     const canClaim = computed(() =>
         quests.value.some(q => q.done && !q.claimed)
     )
+
+    const hasContent = computed(() => isSeeded.value || customAdventures.value.length > 0)
 
     // --- Actions ---
     const toggleQuest = (index: number) => {
@@ -121,17 +143,42 @@ export const useUserStore = () => {
         }
     }
 
+    const addCustomAdventure = (adventure: Adventure) => {
+        // Prevent duplicates by slug
+        if (!customAdventures.value.some(a => a.slug === adventure.slug)) {
+            customAdventures.value.unshift(adventure)
+        }
+    }
+
     const seedData = () => {
         const toast = useToast()
         isSeeded.value = true
-        // Reset quests and notifications to default seeded state
+
+        // Populate with Mock Data
+        user.value = {
+            name: 'Felix',
+            level: 12,
+            avatar: 'Felix',
+            title: 'Master of Space and Math'
+        }
+
+        stats.value = {
+            xp: 2450,
+            coins: 120,
+            badges: 12,
+            streak: 5,
+            totalXp: '15.4k',
+            lessonsDone: 42,
+            friends: 8
+        }
+
         quests.value = DEFAULT_QUESTS.map(q => ({ ...q }))
         notifications.value = DEFAULT_NOTIFICATIONS.map(n => ({ ...n, read: false }))
-        // Optionally pre-seed some completed lessons for demo
         completedLessons.value = ['intro-to-planets', 'moon-mission']
+
         toast.add({
             title: '✅ Data Seeded!',
-            description: 'All app data has been populated successfully.',
+            description: 'Mock data has been populated successfully.',
             icon: 'i-ph-database-duotone',
             color: 'success'
         })
@@ -140,13 +187,33 @@ export const useUserStore = () => {
     const clearData = () => {
         const toast = useToast()
         isSeeded.value = false
-        // Clear reactive session data
+
+        // Reset to Fresh State
+        user.value = {
+            name: 'Explorer',
+            level: 1,
+            avatar: 'Felix',
+            title: 'New Explorer'
+        }
+
+        stats.value = {
+            xp: 0,
+            coins: 0,
+            badges: 0,
+            streak: 0,
+            totalXp: '0',
+            lessonsDone: 0,
+            friends: 0
+        }
+
         quests.value = []
         notifications.value = []
         completedLessons.value = []
+        customAdventures.value = []
+
         toast.add({
             title: '🗑️ Data Cleared!',
-            description: 'All app data has been removed. Empty states are now visible.',
+            description: 'All app data has been reset to empty state.',
             icon: 'i-ph-trash-duotone',
             color: 'error'
         })
@@ -158,6 +225,7 @@ export const useUserStore = () => {
         quests,
         notifications,
         isSeeded,
+        hasContent,
         canClaim,
         toggleQuest,
         markNoteRead,
@@ -166,7 +234,9 @@ export const useUserStore = () => {
         clearAllNotes,
         activeAdventureSlug,
         completedLessons,
+        customAdventures,
         markLessonCompleted,
+        addCustomAdventure,
         claimAllRewards,
         seedData,
         clearData

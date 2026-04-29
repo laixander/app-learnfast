@@ -16,7 +16,7 @@ if (!route.query.adventure) {
 const activeAdventure = computed(() => {
     const querySlug = route.query.adventure
     const slug = Array.isArray(querySlug) ? querySlug[0] : querySlug
-    return adventures.find(a => a.slug === slug) || adventures[0]
+    return adventures.value.find(a => a.slug === slug) || adventures.value[0]
 })
 
 watch(() => route.query.adventure, (newVal) => {
@@ -86,7 +86,7 @@ const allQuizQuestions = computed(() => {
         </header>
 
         <!-- Adventure Banner -->
-        <div v-if="activeAdventure && isSeeded"
+        <div v-if="activeAdventure"
             :class="[bannerClass, 'p-8 md:p-12 rounded-[3.5rem] shadow-2xl text-white relative overflow-hidden group']">
             <UIcon :name="activeAdventure.icon"
                 class="absolute -bottom-10 -right-10 size-64 text-white/10 group-hover:rotate-12 transition-transform duration-700" />
@@ -122,7 +122,7 @@ const allQuizQuestions = computed(() => {
             </div>
         </div>
 
-        <template v-if="isSeeded">
+        <template v-if="lessons.length > 0">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
                 <!-- Adventure Hub Link Card -->

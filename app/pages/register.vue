@@ -38,7 +38,7 @@ async function onSubmit(data: any) {
     await new Promise(resolve => setTimeout(resolve, 2500))
     pending.value = false
 
-    await navigateTo('/dashboard')
+    await navigateTo('/create')
 }
 </script>
 

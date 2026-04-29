@@ -16,7 +16,7 @@ const quizLessons = computed(() => {
 const questions = computed(() => quizLessons.value.flatMap(l => l.quiz))
 const adventure = computed(() => {
     const { adventures } = useAdventures()
-    return adventures.find(a => a.slug === adventureSlug.value)
+    return adventures.value.find(a => a.slug === adventureSlug.value)
 })
 
 import { QUIZ_THEMES, DEFAULT_QUIZ_THEME } from '~/constants/themes'

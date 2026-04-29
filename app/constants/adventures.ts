@@ -22,6 +22,7 @@ export const ADVENTURES: Adventure[] = [
         badge: 'Galactic Voyager',
         lessons: 12,
         time: '45 mins',
+        buttonClass: 'bg-indigo-600 hover:bg-indigo-700',
         startContent: {
             tagline: 'The stars are waiting for you! Grab your space helmet and prepare for a journey beyond the clouds.',
             goals: [
@@ -45,6 +46,7 @@ export const ADVENTURES: Adventure[] = [
         badge: 'Dino Expert',
         lessons: 10,
         time: '35 mins',
+        buttonClass: 'bg-emerald-600 hover:bg-emerald-700',
         startContent: {
             tagline: 'Step back millions of years! Can you find the hidden fossils and name every dinosaur you meet?',
             goals: [
@@ -68,6 +70,7 @@ export const ADVENTURES: Adventure[] = [
         badge: 'Spellcaster',
         lessons: 15,
         time: '50 mins',
+        buttonClass: 'bg-violet-600 hover:bg-violet-700',
         startContent: {
             tagline: 'Your magic wand is powered by numbers! Solve the mysteries of the Wizard Tower and become a master.',
             goals: [
@@ -91,6 +94,7 @@ export const ADVENTURES: Adventure[] = [
         badge: 'Master Painter',
         lessons: 8,
         time: '30 mins',
+        buttonClass: 'bg-rose-600 hover:bg-rose-700',
         startContent: {
             tagline: 'The world is your canvas! Pick up your brush and let your imagination run wild with colors.',
             goals: [
@@ -114,6 +118,7 @@ export const ADVENTURES: Adventure[] = [
         badge: 'Deep Sea Diver',
         lessons: 14,
         time: '55 mins',
+        buttonClass: 'bg-blue-600 hover:bg-blue-700',
         startContent: {
             tagline: 'Take a deep breath and dive in! Exploring the blue ocean and its mysterious creatures.',
             goals: [
@@ -137,6 +142,7 @@ export const ADVENTURES: Adventure[] = [
         badge: 'Nature Scout',
         lessons: 9,
         time: '25 mins',
+        buttonClass: 'bg-lime-600 hover:bg-lime-700',
         startContent: {
             tagline: 'Grab your magnifying glass! There is a whole tiny world hiding in your backyard.',
             goals: [
@@ -147,4 +153,15 @@ export const ADVENTURES: Adventure[] = [
             ]
         }
     }
+]
+
+export const ADVENTURE_HARMONIES = [
+    { color: 'bg-indigo-500', blob: 'bg-indigo-400/20', button: 'bg-indigo-600 hover:bg-indigo-700' },
+    { color: 'bg-emerald-500', blob: 'bg-emerald-400/20', button: 'bg-emerald-600 hover:bg-emerald-700' },
+    { color: 'bg-violet-500', blob: 'bg-violet-400/20', button: 'bg-violet-600 hover:bg-violet-700' },
+    { color: 'bg-rose-500', blob: 'bg-rose-400/20', button: 'bg-rose-600 hover:bg-rose-700' },
+    { color: 'bg-blue-500', blob: 'bg-blue-400/20', button: 'bg-blue-600 hover:bg-blue-700' },
+    { color: 'bg-amber-500', blob: 'bg-amber-400/20', button: 'bg-amber-600 hover:bg-amber-700' },
+    { color: 'bg-cyan-500', blob: 'bg-cyan-400/20', button: 'bg-cyan-600 hover:bg-cyan-700' },
+    { color: 'bg-fuchsia-500', blob: 'bg-fuchsia-400/20', button: 'bg-fuchsia-600 hover:bg-fuchsia-700' }
 ]

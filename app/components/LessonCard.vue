@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Lesson } from '~/composables/useLessons'
+import type { Lesson } from '~/types/lessons'
 
 defineProps<{
     lesson: Lesson
@@ -34,7 +34,7 @@ defineProps<{
         </div>
         <div class="flex flex-col gap-1 mt-2">
             <div class="text-sm font-bold text-primary-600 uppercase tracking-widest">{{ lesson.category }}</div>
-            <h3 class="text-2xl font-black text-toned leading-tight">{{ lesson.title }}</h3>
+            <h3 class="text-2xl font-black text-toned leading-tight truncate" :title="lesson.title">{{ lesson.title }}</h3>
         </div>
         <div class="flex items-center gap-2 mt-auto pt-4">
             <UBadge variant="subtle" color="neutral" class="font-bold px-3 rounded-lg">{{ lesson.level }}</UBadge>

@@ -16,6 +16,7 @@ export interface Adventure extends BaseContent {
   badge: string
   lessons: number
   time: string
+  buttonClass?: string
   startContent: {
     tagline: string
     goals: AdventureGoal[]

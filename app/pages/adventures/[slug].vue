@@ -5,18 +5,18 @@ definePageMeta({
 
 const route = useRoute()
 const { adventures } = useAdventures()
-const { isSeeded, activeAdventureSlug } = useUserStore()
+const { isSeeded, activeAdventureSlug, hasContent } = useUserStore()
 
 const adventure = computed(() => {
-    return adventures.find(a => a.slug === route.params.slug)
+    return adventures.value.find(a => a.slug === route.params.slug)
 })
 
 watch(adventure, (newVal) => {
     if (newVal) activeAdventureSlug.value = newVal.slug
 }, { immediate: true })
 
-// Redirect if data is cleared
-watch(isSeeded, (newVal) => {
+// Redirect if data is cleared (no seeded data AND no custom adventures)
+watch(hasContent, (newVal) => {
     if (!newVal) navigateTo('/adventures')
 }, { immediate: true })
 

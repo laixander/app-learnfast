@@ -9,7 +9,7 @@ const advLessons = computed(() => lessons.filter(l => l.adventureSlug === advent
 const questions = computed(() => advLessons.value.flatMap(l => l.quiz))
 const adventure = computed(() => {
     const { adventures } = useAdventures()
-    return adventures.find(a => a.slug === adventureSlug.value)
+    return adventures.value.find(a => a.slug === adventureSlug.value)
 })
 
 import { EXAM_THEMES, DEFAULT_EXAM_THEME } from '~/constants/themes'

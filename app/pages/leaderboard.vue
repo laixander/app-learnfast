@@ -5,7 +5,7 @@ definePageMeta({
     layout: 'dashboard'
 })
 
-const { isSeeded } = useUserStore()
+const { isSeeded, hasContent } = useUserStore()
 </script>
 
 <template>
@@ -21,7 +21,7 @@ const { isSeeded } = useUserStore()
             <p class="text-xl text-muted font-medium">Are you the top explorer this week?</p>
         </header>
 
-        <template v-if="isSeeded">
+        <template v-if="hasContent">
             <!-- Top 3 Podium -->
             <div class="flex flex-col md:flex-row items-end justify-center gap-6 mt-10 mb-6">
                 <!-- 2nd Place -->

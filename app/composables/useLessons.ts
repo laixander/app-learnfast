@@ -9,7 +9,7 @@ export const useLessons = () => {
     // Use manual lessons from constants
     const allLessons = [...MANUAL_LESSONS]
 
-    adventures.forEach(adv => {
+    adventures.value.forEach(adv => {
         const currentLessons = allLessons.filter(l => l.adventureSlug === adv.slug)
         const remaining = adv.lessons - currentLessons.length
         const bank = lessonBanks[adv.slug] || []
@@ -20,7 +20,7 @@ export const useLessons = () => {
             allLessons.push({
                 slug: `${adv.slug}-lesson-${lessonNumber}`,
                 adventureSlug: adv.slug,
-                title: b?.title || `${adv.title} Chapter ${lessonNumber}`,
+                title: b?.title || `Chapter ${lessonNumber}`,
                 category: adv.category,
                 level: b?.level || 'Intermediate',
                 xp: b?.xp || 250,
@@ -49,7 +49,7 @@ export const useLessons = () => {
 
     // Calculate status for each lesson based on completed lessons
     allLessons.forEach(lesson => {
-        const adv = adventures.find(a => a.slug === lesson.adventureSlug)
+        const adv = adventures.value.find(a => a.slug === lesson.adventureSlug)
         if (!adv) {
             lesson.status = 'locked'
             return
@@ -65,13 +65,8 @@ export const useLessons = () => {
             lesson.status = 'completed'
         } else if (lessonIndex === completedCount) {
             // It's the next lesson in the sequence. 
-            // If the user hasn't completed ANY lessons in this adventure yet, and the original progress was 0, keep it locked until they start from the hub.
-            // But if they have completed at least one, or the adventure is partially started (like Space Explorer at 65%), it's 'current'.
-            if (completedCount === 0 && adv.progress === 0) {
-                lesson.status = 'locked'
-            } else {
-                lesson.status = 'current'
-            }
+            // The first lesson (completedCount === 0) should always be 'current' so the user can start.
+            lesson.status = 'current'
         } else {
             lesson.status = 'locked'
         }

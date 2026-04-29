@@ -5,7 +5,7 @@ definePageMeta({
     layout: 'dashboard'
 })
 
-const { stats, isSeeded } = useUserStore()
+const { stats, isSeeded, hasContent } = useUserStore()
 </script>
 
 <template>
@@ -17,7 +17,7 @@ const { stats, isSeeded } = useUserStore()
                 </h1>
                 <p class="text-xl text-muted font-medium">Spend your Magic Coins on cool gear!</p>
             </div>
-            <div v-if="isSeeded"
+            <div v-if="hasContent"
                 class="bg-white/60 backdrop-blur-md px-8 py-4 rounded-3xl border-2 border-white flex items-center gap-4 shadow-xl">
                 <UIcon name="i-ph-coins-duotone" class="text-orange-500 size-10" />
                 <div class="flex flex-col">
@@ -27,7 +27,7 @@ const { stats, isSeeded } = useUserStore()
             </div>
         </header>
 
-        <template v-if="isSeeded">
+        <template v-if="hasContent">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <UCard v-for="item in SHOP_ITEMS" :key="item.name"
                     class="group hover:ring-4 hover:ring-orange-500/30 transition-all duration-500 rounded-[2.5rem] border-0 shadow-xl overflow-hidden"

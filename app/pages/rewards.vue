@@ -5,7 +5,7 @@ definePageMeta({
     layout: 'dashboard'
 })
 
-const { isSeeded } = useUserStore()
+const { isSeeded, hasContent } = useUserStore()
 </script>
 
 <template>
@@ -21,7 +21,7 @@ const { isSeeded } = useUserStore()
             <p class="text-xl text-muted font-medium">Come back every day for amazing surprises!</p>
         </header>
 
-        <template v-if="isSeeded">
+        <template v-if="hasContent">
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
                 <div v-for="reward in DAILY_REWARDS" :key="reward.day"
                     class="flex flex-col items-center gap-3 p-6 rounded-[2rem] border-4 transition-all duration-300" :class="[

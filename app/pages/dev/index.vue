@@ -715,17 +715,41 @@ interface DailyQuest {
                                     class="absolute -left-2 top-1.5 bg-rose-500 rounded-full size-4 ring-4 ring-neutral-50 dark:ring-neutral-900">
                                 </div>
                                 <div class="flex items-center gap-3 mb-2">
-                                    <UBadge color="rose" variant="subtle" size="md">v1.4.0</UBadge>
-                                    <span class="text-xs font-bold text-neutral-400 uppercase">Apr 28, 2026</span>
+                                    <UBadge color="rose" variant="subtle" size="md">v1.5.0</UBadge>
+                                    <span class="text-xs font-bold text-neutral-400 uppercase">Apr 29, 2026</span>
                                     <UBadge color="primary" variant="solid" size="sm">Current</UBadge>
+                                </div>
+                                <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-2">Thematic Quizzes &
+                                    UX Stability</h3>
+                                <ul class="list-disc list-inside text-neutral-600 dark:text-neutral-400 space-y-1">
+                                    <li>Implemented `Thematic Quiz System` with knowledge checks and mastery exams.</li>
+                                    <li>Enhanced `UX Stability` with flickering fixes and optimized adventure
+                                        transitions.</li>
+                                    <li>Added `Dynamic Icon Detection` for custom-created adventures.</li>
+                                    <li>Standardized `Global Type System` across the entire application hierarchy.</li>
+                                    <li>Finalized `AI Laboratory Polish` with alchemical themes and progress tracking.
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="relative pl-8">
+                                <div
+                                    class="absolute -left-2 top-1.5 bg-neutral-300 dark:bg-neutral-600 rounded-full size-4 ring-4 ring-neutral-50 dark:ring-neutral-900">
+                                </div>
+                                <div class="flex items-center gap-3 mb-2">
+                                    <UBadge color="neutral" variant="subtle" size="md">v1.4.0</UBadge>
+                                    <span class="text-xs font-bold text-neutral-400 uppercase">Apr 28, 2026</span>
                                 </div>
                                 <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-2">AI Laboratory &
                                     Type Systems</h3>
                                 <ul class="list-disc list-inside text-neutral-600 dark:text-neutral-400 space-y-1">
-                                    <li>Launched **AI Adventure Laboratory** wizard with dynamic card generation.</li>
-                                    <li>Integrated **AI Lesson Engine** with file-based content generation and onboarding.</li>
-                                    <li>Refactored **Quiz Type System** with centralized interfaces and interactive modals.</li>
-                                    <li>Enhanced **Adventure Card Aesthetics** with premium hover effects and dynamic tints.</li>
+                                    <li>Launched `AI Adventure Laboratory` wizard with dynamic card generation.</li>
+                                    <li>Integrated `AI Lesson Engine` with file-based content generation and onboarding.
+                                    </li>
+                                    <li>Refactored `Quiz Type System` with centralized interfaces and interactive
+                                        modals.</li>
+                                    <li>Enhanced `Adventure Card Aesthetics` with premium hover effects and dynamic
+                                        tints.</li>
                                 </ul>
                             </div>
 

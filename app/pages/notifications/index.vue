@@ -5,6 +5,7 @@ definePageMeta({
 
 const {
     isSeeded,
+    hasContent,
     notifications,
     markNoteRead,
     toggleNoteRead,
@@ -49,7 +50,7 @@ const getActions = (id: number) => {
             <p class="text-xl text-muted font-medium">See what's happening in your adventure!</p>
         </header>
 
-        <template v-if="isSeeded && notifications.length">
+        <template v-if="hasContent && notifications.length">
             <div class="flex flex-col gap-4">
                 <div v-for="note in notifications" :key="note.id"
                     class="group flex items-center gap-6 bg-white/60 backdrop-blur-md p-6 rounded-[2.5rem] border-2 border-white shadow-xl hover:-translate-x-2 transition-all duration-300 cursor-pointer relative"

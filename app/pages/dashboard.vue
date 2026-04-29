@@ -5,9 +5,9 @@ definePageMeta({
     layout: 'dashboard'
 })
 
-const { user, stats, quests, isSeeded, canClaim, toggleQuest, claimAllRewards } = useUserStore()
+const { user, stats, quests, isSeeded, hasContent, canClaim, toggleQuest, claimAllRewards } = useUserStore()
 const { adventures: allAdventures } = useAdventures()
-const adventures = computed(() => allAdventures.slice(0, 4))
+const adventures = computed(() => allAdventures.value.slice(0, 4))
 
 const statsDisplay = computed(() =>
     STAT_DISPLAY_CONFIG.map(config => ({
@@ -27,7 +27,8 @@ const statsDisplay = computed(() =>
                     <div
                         class="absolute -inset-2 bg-linear-to-r from-primary-400 to-pink-400 rounded-full blur-md opacity-50 group-hover:opacity-100 transition duration-500 animate-pulse" />
                     <NuxtLink to="/profile">
-                        <UAvatar :src="`https://api.dicebear.com/9.x/thumbs/svg?seed=${user.avatar}`" alt="User" size="xl"
+                        <UAvatar :src="`https://api.dicebear.com/9.x/thumbs/svg?seed=${user.avatar}`" alt="User"
+                            size="xl"
                             class="relative ring-4 ring-white size-24 md:size-32 transition-transform hover:scale-110 cursor-pointer" />
                     </NuxtLink>
                     <div
@@ -51,7 +52,7 @@ const statsDisplay = computed(() =>
 
         <!-- Stats Bar -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            <template v-if="isSeeded">
+            <template v-if="hasContent">
                 <div v-for="stat in statsDisplay" :key="stat.label"
                     class="group relative bg-white/60 backdrop-blur-lg p-6 rounded-[2.5rem] border-2 border-white flex flex-col items-center gap-3 transition-all hover:-translate-y-2 hover:shadow-2xl hover:border-primary-200 overflow-hidden duration-500">
                     <div
@@ -86,7 +87,7 @@ const statsDisplay = computed(() =>
                         class="font-bold text-lg" />
                 </div>
 
-                <template v-if="isSeeded">
+                <template v-if="hasContent">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <AdventureCard v-for="adv in adventures" :key="adv.title" :adventure="adv" />
                     </div>
@@ -104,7 +105,7 @@ const statsDisplay = computed(() =>
                     </h2>
                 </div>
 
-                <template v-if="isSeeded && quests.length">
+                <template v-if="hasContent && quests.length">
                     <div
                         class="bg-white/60 backdrop-blur-xl p-8 rounded-[3rem] border-4 border-white/50 shadow-2xl flex flex-col gap-6">
                         <div v-for="(quest, index) in quests" :key="index"
@@ -120,7 +121,8 @@ const statsDisplay = computed(() =>
                             <div class="flex-1">
                                 <div class="font-black text-lg" :class="{ 'line-through opacity-50': quest.done }">{{
                                     quest.task }}</div>
-                                <div class="text-sm font-bold" :class="quest.claimed ? 'text-muted' : 'text-primary-600'">
+                                <div class="text-sm font-bold"
+                                    :class="quest.claimed ? 'text-muted' : 'text-primary-600'">
                                     {{ quest.claimed ? 'Reward Claimed!' : quest.reward }}
                                 </div>
                             </div>
@@ -146,12 +148,13 @@ const statsDisplay = computed(() =>
                         <UIcon name="i-ph-users-duotone" />
                         Friends
                     </h3>
-                    <template v-if="isSeeded">
+                    <template v-if="hasContent">
                         <div class="flex flex-col gap-4 relative z-10">
                             <div v-for="friend in FRIENDS" :key="friend.seed"
                                 class="flex items-center gap-3 p-3 rounded-2xl"
                                 :class="friend.isMe ? 'bg-white/20 ring-2 ring-yellow-400' : 'bg-white/10'">
-                                <UAvatar :src="`https://api.dicebear.com/9.x/thumbs/svg?seed=${friend.seed}`" size="sm" />
+                                <UAvatar :src="`https://api.dicebear.com/9.x/thumbs/svg?seed=${friend.seed}`"
+                                    size="sm" />
                                 <div class="flex-1 font-bold">{{ friend.name }}</div>
                                 <div class="font-black">{{ friend.rank }}</div>
                             </div>
@@ -169,23 +172,3 @@ const statsDisplay = computed(() =>
         </div>
     </div>
 </template>
-
-<style scoped>
-@keyframes float {
-    0% {
-        transform: translateY(0px) rotate(0deg);
-    }
-
-    50% {
-        transform: translateY(-10px) rotate(2deg);
-    }
-
-    100% {
-        transform: translateY(0px) rotate(0deg);
-    }
-}
-
-.animate-float {
-    animation: float 4s ease-in-out infinite;
-}
-</style>
