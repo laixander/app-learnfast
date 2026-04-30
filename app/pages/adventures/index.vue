@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useMouseInElement } from '@vueuse/core'
 definePageMeta({
     layout: 'dashboard'
 })
@@ -15,6 +16,10 @@ const visibleCategories = computed(() => {
 })
 
 const hasMoreCategories = computed(() => categories.value.length > visibleCategories.value.length)
+
+// Spotlight Effect Logic
+const sectionRef = ref(null)
+const { elementX, elementY, isOutside } = useMouseInElement(sectionRef)
 
 const filteredAdventures = computed(() => {
     if (selectedCategory.value === 'All') return adventures.value
@@ -37,13 +42,19 @@ const selectCategory = (name: string) => {
                 <p class="text-xl text-muted font-medium">Where will you go next, Felix?</p>
             </div> -->
             <!-- Create AI Sandbox UI -->
-            <section v-if="isSeeded"
-                class="relative group bg-white/40 backdrop-blur-2xl p-8 md:p-12 rounded-[3.5rem] border-4 border-white shadow-2xl overflow-hidden transition-all hover:shadow-primary-500/10 mb-2">
+            <section v-if="isSeeded" ref="sectionRef"
+                class="relative group bg-linear-to-br from-primary-50/50 via-white/80 to-indigo-50/50 dark:from-primary-950/20 dark:via-neutral-900/40 dark:to-indigo-950/20 backdrop-blur-3xl p-8 md:p-12 rounded-[3.5rem] border-4 border-white dark:border-neutral-800 shadow-[0_32px_64px_-12px_rgba(99,102,241,0.12)] overflow-hidden transition-all duration-500 hover:shadow-primary-500/20 mb-2">
+                <!-- Spotlight Effect -->
+                <div class="pointer-events-none absolute inset-0 z-0 transition-opacity duration-500 opacity-0 group-hover:opacity-100"
+                    :style="{
+                        background: `radial-gradient(500px circle at ${elementX}px ${elementY}px, rgba(99, 102, 241, 0.3), transparent 60%)`
+                    }" />
+
                 <!-- Decorative Elements -->
                 <div
-                    class="absolute -top-20 -right-20 size-80 bg-primary-200/30 rounded-full blur-3xl group-hover:bg-primary-300/40 transition-colors duration-700" />
+                    class="absolute -top-20 -right-20 size-96 bg-purple-400/20 rounded-full blur-[100px] group-hover:bg-purple-400/60 transition-colors duration-700 animate-pulse" />
                 <div
-                    class="absolute -bottom-20 -left-20 size-60 bg-pink-200/30 rounded-full blur-3xl group-hover:bg-pink-300/40 transition-colors duration-700" />
+                    class="absolute -bottom-20 -left-20 size-80 bg-fuchsia-400/20 rounded-full blur-[100px] group-hover:bg-fuchsia-400/60 transition-colors duration-700 animate-pulse" />
 
                 <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10">
                     <div class="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">

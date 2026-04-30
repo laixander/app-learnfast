@@ -57,7 +57,7 @@ const getActions = (id: number) => {
                     :class="{ 'opacity-70 shadow-sm grayscale-[0.3]': note.read }" @click="viewDetails(note.id)">
 
                     <!-- Unread Dot -->
-                    <div v-if="!note.read" class="absolute top-4 left-4 z-20">
+                    <div v-if="!note.read" class="absolute top-9 left-6 z-20">
                         <span class="relative flex h-4 w-4">
                             <span
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>

@@ -136,11 +136,10 @@ const { isScrolled } = useStickyHeader()
 
                         <!-- Bottom bar -->
                         <div class="flex flex-col md:flex-row items-center justify-between gap-3">
-                            <p class="text-primary-200/40 text-xs font-medium">
+                            <p class="flex items-center text-primary-200/40 text-xs font-medium">
                                 © {{ new Date().getFullYear() }} LearnFast — Made with
-                                <UIcon name="i-ph-heart-fill"
-                                    class="inline size-3 text-pink-400 animate-pulse mx-0.5" />
-                                for curious minds
+                                <UIcon name="i-ph-heart-fill" class="size-4 text-pink-400 animate-pulse mx-0.5" /> by
+                                Laix for curious minds
                             </p>
                             <p class="text-primary-200/30 text-xs">
                                 Learning is an adventure!

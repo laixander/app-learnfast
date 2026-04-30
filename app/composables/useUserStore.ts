@@ -32,14 +32,14 @@ export interface Notification {
 
 export const useUserStore = () => {
     // --- Persistent State via Cookies ---
-    const userCookie = useCookie('learnfast-user', { 
+    const userCookie = useCookie('learnfast-user', {
         default: () => ({
             name: 'Explorer',
             level: 1,
             avatar: 'Felix',
             title: 'New Explorer'
-        }), 
-        watch: true 
+        }),
+        watch: true
     })
     const statsCookie = useCookie('learnfast-stats', {
         default: () => ({
@@ -179,7 +179,7 @@ export const useUserStore = () => {
         completedLessons.value = ['intro-to-planets', 'moon-mission']
 
         toast.add({
-            title: '✅ Data Seeded!',
+            title: 'Data Seeded!',
             description: 'Mock data has been populated successfully.',
             icon: 'i-ph-database-duotone',
             color: 'success'
@@ -214,11 +214,15 @@ export const useUserStore = () => {
         customAdventures.value = []
 
         toast.add({
-            title: '🗑️ Data Cleared!',
+            title: 'Data Cleared!',
             description: 'All app data has been reset to empty state.',
             icon: 'i-ph-trash-duotone',
             color: 'error'
         })
+    }
+
+    const updateUser = (data: Partial<typeof user.value>) => {
+        user.value = { ...user.value, ...data }
     }
 
     return {
@@ -241,6 +245,7 @@ export const useUserStore = () => {
         addCustomAdventure,
         claimAllRewards,
         seedData,
-        clearData
+        clearData,
+        updateUser
     }
 }
