@@ -19,6 +19,7 @@ LearnFast is a kid-friendly, vibrant, and AI-powered learning platform designed 
 - **Styling**: Tailwind CSS
 - **Icons**: Phosphor Icons (i-ph-*)
 - **Typography**: Sour Gummy (Google Fonts)
+- **Colors**: Violet, Slate (Tailwind Color Palette)
 
 ## Setup
 
