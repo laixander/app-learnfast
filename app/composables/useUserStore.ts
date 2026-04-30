@@ -5,6 +5,8 @@ export interface Quest {
     id: number
     task: string
     reward: string
+    category: 'Learning' | 'Social' | 'Creative'
+    difficulty: 'easy' | 'medium' | 'hard'
     done: boolean
     claimed: boolean
     rewardValue: number

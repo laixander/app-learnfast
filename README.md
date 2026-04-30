@@ -1,6 +1,6 @@
 # LearnFast - AI-Powered Learning Platform
 
-[![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+[![NuxtUI](https://img.shields.io/badge/NuxtUI-4.x-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)  [![Nuxt](https://img.shields.io/badge/Nuxt-4.x-00DC82?logo=nuxt&labelColor=020420)](https://nuxt.com)  [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.x-06B6D4?logo=tailwind-css&labelColor=020420)](https://tailwindcss.com)
 
 LearnFast is a kid-friendly, vibrant, and AI-powered learning platform designed to make education an adventure. Students can explore themed missions, earn rewards, and even generate their own custom learning experiences using advanced AI.
 

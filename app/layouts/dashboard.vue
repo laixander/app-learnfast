@@ -49,6 +49,12 @@ const userActions = [
         onClick: () => { navigateTo('/create'); rightFabOpen.value = false }
     },
     {
+        label: 'Daily Quests',
+        icon: 'i-ph-scroll-duotone',
+        color: 'bg-yellow-500 hover:bg-yellow-600',
+        onClick: () => { navigateTo('/quests'); rightFabOpen.value = false }
+    },
+    {
         label: 'My Collection',
         icon: 'i-ph-books-duotone',
         color: 'bg-indigo-500 hover:bg-indigo-600',

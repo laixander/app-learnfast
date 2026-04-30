@@ -5,7 +5,7 @@ definePageMeta({
 
 const route = useRoute()
 const { lessons } = useLessons()
-const { isSeeded, markLessonCompleted } = useUserStore()
+const { hasContent, markLessonCompleted } = useUserStore()
 
 const lesson = computed(() => {
     return lessons.find(l => l.slug === route.params.slug)
@@ -49,8 +49,8 @@ const finishAction = computed(() => {
     }
 })
 
-// Redirect if data is cleared
-watch(isSeeded, (newVal) => {
+// Redirect if data is cleared (no seeded data AND no custom adventures)
+watch(hasContent, (newVal) => {
     if (!newVal) navigateTo('/adventures')
 }, { immediate: true })
 

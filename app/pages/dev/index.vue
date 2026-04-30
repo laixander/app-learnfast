@@ -710,6 +710,11 @@ interface DailyQuest {
 
                         <div class="relative border-l-2 border-rose-200 dark:border-rose-800 ml-4 space-y-10 py-4">
 
+                            <!-- "Implemented full-page Daily Quests experience replacing dashboard widget, with extended Quest data model for categories and levels",
+            "Enhanced AI Adventure Laboratory with dynamic icon detection and improved adventure card display ordering",
+            "Resolved custom adventure navigation issues including 'Start Lessons' visibility and access to Adventure Hub",
+            "Polished 'Create Adventure' wizard with color harmony logic and dynamic progress trackers", -->
+
                             <div class="relative pl-8">
                                 <div
                                     class="absolute -left-2 top-1.5 bg-rose-500 rounded-full size-4 ring-4 ring-neutral-50 dark:ring-neutral-900">

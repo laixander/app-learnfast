@@ -98,18 +98,19 @@ const statsDisplay = computed(() =>
 
             <!-- Daily Quests -->
             <div class="flex flex-col gap-6">
-                <div class="px-4">
-                    <h2 class="text-3xl font-black text-toned flex items-center gap-3">
+                <div class="flex items-center justify-between px-4">
+                    <h2 class="text-2xl font-black text-toned flex items-center gap-3">
                         <UIcon name="i-ph-scroll-duotone" class="text-yellow-500" />
                         Daily Quests
                     </h2>
+                    <UButton to="/quests" label="View All" variant="link" color="primary" class="font-bold text-lg" />
                 </div>
 
                 <template v-if="hasContent && quests.length">
                     <div
                         class="bg-white/60 backdrop-blur-xl p-8 rounded-[3rem] border-4 border-white/50 shadow-2xl flex flex-col gap-6">
-                        <div v-for="(quest, index) in quests" :key="index"
-                            class="flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 cursor-pointer select-none"
+                        <div v-for="(quest, index) in quests.slice(0, 3)" :key="index"
+                            class="flex items-center gap-4 p-4 rounded-md transition-all duration-200 cursor-pointer select-none"
                             :class="[
                                 quest.claimed ? 'bg-primary-50/50 opacity-40' :
                                     quest.done ? 'bg-primary-50 border-2 border-primary-200' : 'bg-white border-2 border-transparent hover:shadow-lg hover:-translate-x-1'

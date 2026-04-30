@@ -60,11 +60,24 @@ export const PROFILE_BADGES = [
     { name: 'Book Worm', icon: 'i-ph-book-duotone', color: 'bg-rose-500' }
 ]
 
+// --- Quest Categories ---
+export const QUEST_CATEGORIES = [
+    { name: 'Learning', icon: 'i-ph-book-open-duotone', color: 'text-emerald-500', bg: 'bg-emerald-50', ring: 'ring-emerald-200' },
+    { name: 'Social', icon: 'i-ph-users-duotone', color: 'text-blue-500', bg: 'bg-blue-50', ring: 'ring-blue-200' },
+    { name: 'Creative', icon: 'i-ph-paint-brush-duotone', color: 'text-pink-500', bg: 'bg-pink-50', ring: 'ring-pink-200' }
+] as const
+
 // --- Daily Quests Config (initial/default state) ---
 export const DEFAULT_QUESTS = [
-    { id: 1, task: 'Complete 1 Math Lesson', reward: '50 XP', done: true, claimed: false, rewardValue: 50, rewardType: 'xp' as const },
-    { id: 2, task: 'Read about Mars', reward: '20 Coins', done: false, claimed: false, rewardValue: 20, rewardType: 'coins' as const },
-    { id: 3, task: 'Draw a dinosaur', reward: '1 Badge', done: false, claimed: false, rewardValue: 1, rewardType: 'badges' as const }
+    // Learning
+    { id: 1, task: 'Complete 1 Math Lesson', reward: '50 XP', category: 'Learning' as const, difficulty: 'easy' as const, done: true, claimed: false, rewardValue: 50, rewardType: 'xp' as const },
+    { id: 2, task: 'Finish a Space Explorer chapter', reward: '75 XP', category: 'Learning' as const, difficulty: 'medium' as const, done: false, claimed: false, rewardValue: 75, rewardType: 'xp' as const },
+    // Social
+    { id: 3, task: 'Visit the Leaderboard', reward: '20 Coins', category: 'Social' as const, difficulty: 'easy' as const, done: false, claimed: false, rewardValue: 20, rewardType: 'coins' as const },
+    { id: 4, task: 'Check a friend\'s profile', reward: '30 Coins', category: 'Social' as const, difficulty: 'medium' as const, done: false, claimed: false, rewardValue: 30, rewardType: 'coins' as const },
+    // Creative
+    { id: 5, task: 'Create a custom Adventure', reward: '1 Badge', category: 'Creative' as const, difficulty: 'hard' as const, done: false, claimed: false, rewardValue: 1, rewardType: 'badges' as const },
+    { id: 6, task: 'Draw a dinosaur in Art Studio', reward: '40 Coins', category: 'Creative' as const, difficulty: 'medium' as const, done: false, claimed: false, rewardValue: 40, rewardType: 'coins' as const }
 ]
 
 // --- Notifications Config ---
