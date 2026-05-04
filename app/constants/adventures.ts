@@ -1,12 +1,4 @@
-import type { Adventure, Category } from '~/types/adventures'
-
-export const CATEGORIES: Category[] = [
-    { name: 'All', icon: 'i-ph-grid-four-duotone' },
-    { name: 'Science', icon: 'i-ph-planet-duotone' },
-    { name: 'Math', icon: 'i-ph-calculator-duotone' },
-    { name: 'History', icon: 'i-ph-hourglass-duotone' },
-    { name: 'Art', icon: 'i-ph-palette-duotone' }
-]
+import type { Adventure } from '~/types/adventures'
 
 export const ADVENTURES: Adventure[] = [
     {
@@ -15,14 +7,10 @@ export const ADVENTURES: Adventure[] = [
         category: 'Science',
         description: 'Visit the planets and learn about stars!',
         longDescription: 'Embark on a cosmic journey! Discover the secrets of our solar system, walk on the moon, and learn what makes stars shine so bright. Perfect for young astronomers ready to blast off!',
-        icon: 'i-ph-planet-duotone',
         progress: 65,
-        color: 'bg-indigo-500',
-        blob: 'bg-indigo-400/20',
         badge: 'Galactic Voyager',
         lessons: 12,
         time: '45 mins',
-        buttonClass: 'bg-indigo-600 hover:bg-indigo-700',
         startContent: {
             tagline: 'The stars are waiting for you! Grab your space helmet and prepare for a journey beyond the clouds.',
             goals: [
@@ -39,14 +27,10 @@ export const ADVENTURES: Adventure[] = [
         category: 'History',
         description: 'Travel back in time to meet the T-Rex!',
         longDescription: 'Roar into the past! Meet the giants that ruled the Earth millions of years ago. Learn about different species, their diets, and how they lived in this prehistoric adventure.',
-        icon: 'i-ph-butterfly-duotone',
         progress: 30,
-        color: 'bg-emerald-500',
-        blob: 'bg-emerald-400/20',
         badge: 'Dino Expert',
         lessons: 10,
         time: '35 mins',
-        buttonClass: 'bg-emerald-600 hover:bg-emerald-700',
         startContent: {
             tagline: 'Step back millions of years! Can you find the hidden fossils and name every dinosaur you meet?',
             goals: [
@@ -63,14 +47,10 @@ export const ADVENTURES: Adventure[] = [
         category: 'Math',
         description: 'Solve puzzles and unlock magic spells!',
         longDescription: 'Numbers are your magic wand! Solve mystical equations and logic puzzles to unlock powerful spells. Math has never been this magical or fun!',
-        icon: 'i-ph-magic-wand-duotone',
         progress: 85,
-        color: 'bg-violet-500',
-        blob: 'bg-violet-400/20',
         badge: 'Spellcaster',
         lessons: 15,
         time: '50 mins',
-        buttonClass: 'bg-violet-600 hover:bg-violet-700',
         startContent: {
             tagline: 'Your magic wand is powered by numbers! Solve the mysteries of the Wizard Tower and become a master.',
             goals: [
@@ -82,19 +62,53 @@ export const ADVENTURES: Adventure[] = [
         }
     },
     {
+        slug: 'code-academy',
+        title: 'Code Academy',
+        category: 'Computer',
+        description: 'Build your first robot friend!',
+        longDescription: 'Enter the world of digital creation! Learn how to talk to computers, solve logic puzzles, and build your very own virtual robot friend from scratch.',
+        progress: 45,
+        badge: 'Logic Master',
+        lessons: 10,
+        time: '40 mins',
+        startContent: {
+            tagline: 'Computers have a secret language! Are you ready to learn it and build amazing things?',
+            goals: [
+                { title: 'Robot Logic', description: 'Teach your robot how to walk and talk.', icon: 'i-ph-robot-duotone', color: 'text-sky-300' },
+                { title: 'Command Block', description: 'Use blocks to build a digital sequence.', icon: 'i-ph-cube-duotone', color: 'text-blue-300' },
+                { title: 'Debug Quest', description: 'Find and fix the bugs in your code.', icon: 'i-ph-bug-duotone', color: 'text-indigo-300' }
+            ]
+        }
+    },
+    {
+        slug: 'storybook-island',
+        title: 'Storybook Island',
+        category: 'English',
+        description: 'Write your own epic fairytale!',
+        longDescription: 'Every word is an adventure! Travel to an island where stories come to life. Learn about characters, settings, and plot while writing your very own bestseller.',
+        progress: 10,
+        badge: 'Word Smith',
+        lessons: 8,
+        time: '30 mins',
+        startContent: {
+            tagline: 'Pick up your pen! A world of stories is waiting to be written by you.',
+            goals: [
+                { title: 'Hero Journey', description: 'Create a main character for your story.', icon: 'i-ph-user-circle-duotone', color: 'text-pink-300' },
+                { title: 'Magic Words', description: 'Learn new and exciting words to use.', icon: 'i-ph-sparkles-duotone', color: 'text-rose-300' },
+                { title: 'Fairytale Fix', description: 'Help finish a story that lost its ending.', icon: 'i-ph-feather-duotone', color: 'text-fuchsia-300' }
+            ]
+        }
+    },
+    {
         slug: 'art-studio',
         title: 'Art Studio',
         category: 'Art',
         description: 'Create your own masterpieces!',
         longDescription: 'Unleash your inner artist! Explore colors, shapes, and textures. Learn about famous artists and create your own digital masterpieces in this colorful studio.',
-        icon: 'i-ph-palette-duotone',
         progress: 15,
-        color: 'bg-rose-500',
-        blob: 'bg-rose-400/20',
         badge: 'Master Painter',
         lessons: 8,
         time: '30 mins',
-        buttonClass: 'bg-rose-600 hover:bg-rose-700',
         startContent: {
             tagline: 'The world is your canvas! Pick up your brush and let your imagination run wild with colors.',
             goals: [
@@ -111,14 +125,10 @@ export const ADVENTURES: Adventure[] = [
         category: 'Science',
         description: 'Dive into the blue and meet the whales!',
         longDescription: 'Splashing into discovery! Dive deep into the ocean to meet amazing sea creatures. Learn about coral reefs, whales, and the importance of our blue planet.',
-        icon: 'i-ph-waves-duotone',
         progress: 0,
-        color: 'bg-blue-500',
-        blob: 'bg-blue-400/20',
         badge: 'Deep Sea Diver',
         lessons: 14,
         time: '55 mins',
-        buttonClass: 'bg-blue-600 hover:bg-blue-700',
         startContent: {
             tagline: 'Take a deep breath and dive in! Exploring the blue ocean and its mysterious creatures.',
             goals: [
@@ -135,14 +145,10 @@ export const ADVENTURES: Adventure[] = [
         category: 'Science',
         description: 'Find all the tiny creatures in the garden.',
         longDescription: 'Tiny world, big wonders! Grab your magnifying glass and explore the garden. Learn about bees, butterflies, and all the creepy crawlies that help our world grow.',
-        icon: 'i-ph-bug-duotone',
         progress: 0,
-        color: 'bg-lime-500',
-        blob: 'bg-lime-400/20',
         badge: 'Nature Scout',
         lessons: 9,
         time: '25 mins',
-        buttonClass: 'bg-lime-600 hover:bg-lime-700',
         startContent: {
             tagline: 'Grab your magnifying glass! There is a whole tiny world hiding in your backyard.',
             goals: [

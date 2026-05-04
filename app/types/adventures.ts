@@ -5,14 +5,15 @@ export interface AdventureGoal extends BaseContent {
   color: string
 }
 
-export interface Adventure extends BaseContent {
+export interface Adventure extends Omit<BaseContent, 'icon'> {
   slug: string
   category: string
   description: string
   longDescription: string
   progress: number
-  color: string
-  blob: string
+  icon?: string
+  color?: string
+  blob?: string
   badge: string
   lessons: number
   time: string

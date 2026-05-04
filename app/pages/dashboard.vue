@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useMouseInElement } from '@vueuse/core'
 import { STAT_DISPLAY_CONFIG, FRIENDS } from '~/constants/gameData'
 
 definePageMeta({
@@ -8,6 +9,9 @@ definePageMeta({
 const { user, stats, quests, isSeeded, hasContent, canClaim, toggleQuest, claimAllRewards } = useUserStore()
 const { adventures: allAdventures } = useAdventures()
 const adventures = computed(() => allAdventures.value.slice(0, 4))
+
+const headerRef = ref(null)
+const { elementX, elementY } = useMouseInElement(headerRef)
 
 const statsDisplay = computed(() =>
     STAT_DISPLAY_CONFIG.map(config => ({
@@ -20,8 +24,13 @@ const statsDisplay = computed(() =>
 <template>
     <div class="relative z-10 flex flex-col gap-10">
         <!-- Welcome Header (always visible) -->
-        <header
-            class="flex flex-col md:flex-row items-center justify-between gap-6 bg-white/40 backdrop-blur-xl p-8 rounded-[3rem] border-4 border-white/50 shadow-2xl shadow-primary-500/10 transition-all hover:border-primary-300">
+        <header ref="headerRef"
+            class="relative group flex flex-col md:flex-row items-center justify-between gap-6 bg-white/40 backdrop-blur-xl p-8 rounded-[3rem] border-4 border-white/50 shadow-2xl shadow-primary-500/10 transition-all hover:border-primary-300 overflow-hidden">
+            <!-- Spotlight Effect -->
+            <div class="pointer-events-none absolute inset-0 z-0 transition-opacity duration-500 opacity-0 group-hover:opacity-100"
+                :style="{
+                    background: `radial-gradient(500px circle at ${elementX}px ${elementY}px, rgba(99, 102, 241, 0.3), transparent 80%)`
+                }" />
             <div class="flex items-center gap-6">
                 <div class="relative group">
                     <div

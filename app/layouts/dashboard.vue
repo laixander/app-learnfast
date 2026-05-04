@@ -15,56 +15,60 @@ const isNavActive = (link: typeof navLinks[number]) => {
     return link.match.some(prefix => route.path.startsWith(prefix))
 }
 
-const fabOpen = ref(false)
-const rightFabOpen = ref(false)
+const { user, seedData, clearData } = useUserStore()
+const { seedDefaults: seedCategories } = useCategories()
 
-const { seedData, clearData } = useUserStore()
-
-const fabActions = [
+const devActions = computed(() => [
+    {
+        label: 'Admin Center',
+        icon: 'i-ph-shield-check-duotone',
+        color: 'bg-indigo-600 hover:bg-indigo-700',
+        onClick: () => navigateTo('/admin')
+    },
     {
         label: 'DevDocs',
         icon: 'i-ph-book-duotone',
         color: 'bg-amber-500 hover:bg-amber-600',
-        onClick: () => { navigateTo('/dev'); fabOpen.value = false }
+        onClick: () => navigateTo('/dev')
     },
     {
-        label: 'Seed Data',
+        label: 'Seed All Data',
         icon: 'i-ph-database-duotone',
         color: 'bg-emerald-500 hover:bg-emerald-600',
-        onClick: () => { seedData(); fabOpen.value = false }
+        onClick: () => { seedData(); seedCategories() }
     },
     {
         label: 'Clear Data',
         icon: 'i-ph-trash-duotone',
         color: 'bg-rose-500 hover:bg-rose-600',
-        onClick: () => { clearData(); fabOpen.value = false }
+        onClick: () => clearData()
     }
-]
+])
 
 const userActions = [
     {
         label: 'New Adventure',
         icon: 'i-ph-magic-wand-duotone',
         color: 'bg-primary-500 hover:bg-primary-600',
-        onClick: () => { navigateTo('/create'); rightFabOpen.value = false }
+        onClick: () => navigateTo('/create')
     },
     {
         label: 'Daily Quests',
         icon: 'i-ph-scroll-duotone',
         color: 'bg-yellow-500 hover:bg-yellow-600',
-        onClick: () => { navigateTo('/quests'); rightFabOpen.value = false }
+        onClick: () => navigateTo('/quests')
     },
     {
         label: 'My Collection',
         icon: 'i-ph-books-duotone',
         color: 'bg-indigo-500 hover:bg-indigo-600',
-        onClick: () => { navigateTo('/adventures'); rightFabOpen.value = false }
+        onClick: () => navigateTo('/adventures')
     },
     {
         label: 'Daily Bonus',
         icon: 'i-ph-gift-duotone',
         color: 'bg-pink-500 hover:bg-pink-600',
-        onClick: () => { navigateTo('/rewards'); rightFabOpen.value = false }
+        onClick: () => navigateTo('/rewards')
     }
 ]
 
@@ -73,24 +77,26 @@ const createActions = [
         label: 'Back to Dashboard',
         icon: 'i-ph-layout-duotone',
         color: 'bg-indigo-500 hover:bg-indigo-600',
-        onClick: () => { navigateTo('/dashboard'); rightFabOpen.value = false }
+        onClick: () => navigateTo('/dashboard')
     },
     {
         label: 'My Adventures',
         icon: 'i-ph-mountains-duotone',
         color: 'bg-emerald-500 hover:bg-emerald-600',
-        onClick: () => { navigateTo('/adventures'); rightFabOpen.value = false }
+        onClick: () => navigateTo('/adventures')
     },
     {
         label: 'Go Home',
         icon: 'i-ph-house-duotone',
         color: 'bg-primary-500 hover:bg-primary-600',
-        onClick: () => { navigateTo('/'); rightFabOpen.value = false }
+        onClick: () => navigateTo('/')
     }
 ]
 
 const isCreatePage = computed(() => route.path === '/create')
 const currentRightActions = computed(() => isCreatePage.value ? createActions : userActions)
+const rightFabIcon = computed(() => isCreatePage.value ? 'i-ph-compass-bold' : 'i-ph-plus-bold')
+const rightFabColor = computed(() => isCreatePage.value ? 'bg-indigo-600 shadow-indigo-500/40' : 'bg-linear-to-br from-primary-500 to-violet-600 shadow-primary-500/40')
 </script>
 
 <template>
@@ -144,73 +150,11 @@ const currentRightActions = computed(() => isCreatePage.value ? createActions : 
             </UContainer>
         </UMain>
 
-        <!-- Left FAB Menu (Dev) -->
-        <div class="fixed bottom-8 left-8 z-50">
-            <Transition name="fab-backdrop">
-                <div v-if="fabOpen" class="fixed inset-0 bg-black/10 backdrop-blur-[2px] -z-10"
-                    @click="fabOpen = false" />
-            </Transition>
+        <!-- FAB Menus -->
+        <AppFab :actions="devActions" icon="i-ph-terminal-window-bold" color="bg-emerald-500 shadow-emerald-500/40"
+            position="left" />
 
-            <div class="absolute bottom-20 left-0 flex flex-col items-start gap-3">
-                <TransitionGroup name="fab-item" tag="div" class="flex flex-col items-start gap-3">
-                    <div v-if="fabOpen" v-for="(action, i) in fabActions" :key="action.label"
-                        class="flex flex-col items-start gap-2" :style="{ transitionDelay: `${i * 60}ms` }">
-                        <div class="flex items-center gap-3">
-                            <button @click="action.onClick"
-                                :class="[action.color, 'size-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 text-white']">
-                                <UIcon :name="action.icon" class="size-6" />
-                            </button>
-                            <span
-                                class="bg-white text-neutral-800 font-black text-sm px-4 py-2 rounded-full shadow-xl ring-2 ring-white/80 whitespace-nowrap">
-                                {{ action.label }}
-                            </span>
-                        </div>
-                    </div>
-                </TransitionGroup>
-            </div>
-
-            <button @click="fabOpen = !fabOpen"
-                class="size-16 rounded-full bg-emerald-500 shadow-2xl shadow-emerald-500/40 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 active:scale-95 ring-4 ring-white"
-                :class="fabOpen ? 'rotate-45 shadow-emerald-600/50' : ''">
-                <UIcon name="i-ph-terminal-window-bold" class="size-7 transition-transform duration-300" />
-            </button>
-        </div>
-
-        <!-- Right FAB Menu (User / Navigation) -->
-        <div class="fixed bottom-8 right-8 z-50">
-            <Transition name="fab-backdrop">
-                <div v-if="rightFabOpen" class="fixed inset-0 bg-black/10 backdrop-blur-[2px] -z-10"
-                    @click="rightFabOpen = false" />
-            </Transition>
-
-            <div class="absolute bottom-20 right-0 flex flex-col items-end gap-3">
-                <TransitionGroup name="fab-item" tag="div" class="flex flex-col items-end gap-3">
-                    <div v-if="rightFabOpen" v-for="(action, i) in currentRightActions" :key="action.label"
-                        class="flex flex-col items-end gap-2" :style="{ transitionDelay: `${i * 60}ms` }">
-                        <div class="flex items-center gap-3">
-                            <span
-                                class="bg-white text-neutral-800 font-black text-sm px-4 py-2 rounded-full shadow-xl ring-2 ring-white/80 whitespace-nowrap">
-                                {{ action.label }}
-                            </span>
-                            <button @click="action.onClick"
-                                :class="[action.color, 'size-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 text-white']">
-                                <UIcon :name="action.icon" class="size-6" />
-                            </button>
-                        </div>
-                    </div>
-                </TransitionGroup>
-            </div>
-
-            <button @click="rightFabOpen = !rightFabOpen"
-                class="size-16 rounded-full shadow-2xl flex items-center justify-center text-white transition-all duration-300 hover:scale-110 active:scale-95 ring-4 ring-white"
-                :class="[
-                    rightFabOpen ? 'rotate-45' : '',
-                    isCreatePage ? 'bg-indigo-600 shadow-indigo-500/40' : 'bg-linear-to-br from-primary-500 to-violet-600 shadow-primary-500/40'
-                ]">
-                <UIcon :name="isCreatePage ? 'i-ph-compass-bold' : 'i-ph-plus-bold'"
-                    class="size-7 transition-transform duration-300" />
-            </button>
-        </div>
+        <AppFab :actions="currentRightActions" :icon="rightFabIcon" :color="rightFabColor" position="right" />
 
         <UFooter class="mt-auto py-8">
             <template #left>
@@ -226,28 +170,3 @@ const currentRightActions = computed(() => isCreatePage.value ? createActions : 
         </UFooter>
     </div>
 </template>
-
-<style scoped>
-/* FAB item enter/leave transitions */
-.fab-item-enter-active,
-.fab-item-leave-active {
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.fab-item-enter-from,
-.fab-item-leave-to {
-    opacity: 0;
-    transform: translateY(16px) scale(0.8);
-}
-
-/* Backdrop fade */
-.fab-backdrop-enter-active,
-.fab-backdrop-leave-active {
-    transition: opacity 0.2s ease;
-}
-
-.fab-backdrop-enter-from,
-.fab-backdrop-leave-to {
-    opacity: 0;
-}
-</style>

@@ -17,6 +17,16 @@ export const DOCS_DATA = {
         stateAndDataFlow: {
             title: 'State & Data Flow',
             content: "Data is primarily managed using Vue 3 reactive primitives (ref, computed) within component script blocks. Shared logic and global state are orchestrated through Nuxt composables, centralized app/types, and layout-level provision."
+        },
+        businessLogic: {
+            title: 'Core Composables',
+            icon: 'i-ph-function-duotone',
+            items: [
+                { name: 'useUserStore', description: 'Centralized store for user profile, stats, and persistent state.' },
+                { name: 'useAdventures', description: 'Manages adventure listings and dynamic styling resolution.' },
+                { name: 'useCategories', description: 'Handles category management and administrative content seeding.' },
+                { name: 'useSuggestions', description: 'Orchestrates AI-driven topic and category suggestions.' }
+            ]
         }
     },
     designSystem: {
@@ -50,6 +60,12 @@ export const DOCS_DATA = {
                 icon: 'i-ph-star-duotone',
                 description: 'All application icons are configured in app.config.ts utilizing the Phosphor icon set (i-ph-*), known for its clean, modern curves.',
                 icons: ['i-ph-rocket-duotone', 'i-ph-planet-duotone', 'i-ph-alien-duotone']
+            },
+            {
+                title: 'Design-as-Data',
+                icon: 'i-ph-tree-structure-duotone',
+                description: 'Visual harmony is achieved through metadata. Adventures inherit their color and icon themes directly from their assigned Category, ensuring a scalable and dynamic content engine.',
+                examples: ['Category Icons', 'Dynamic Badges']
             }
         ]
     },
@@ -66,11 +82,13 @@ export const DOCS_DATA = {
             { title: 'Auth Module', icon: 'i-ph-lock-key-duotone', iconColor: 'text-teal-500', files: ['login.vue', 'register.vue'], fileColor: 'text-teal-600 bg-teal-50', description: 'Uses the `login` layout. Integrates `UAuthForm` for standardized form validation and submission. Transitions user to the Dashboard on success.' },
             { title: 'Core Content', icon: 'i-ph-books-duotone', iconColor: 'text-cyan-500', files: ['dashboard.vue', 'adventures/[slug].vue', 'lessons/[slug].vue'], fileColor: 'text-cyan-600 bg-cyan-50', description: '`dashboard.vue` acts as the entry point. Dynamic routing (`[slug].vue`) is used to render specific missions or interactive lessons.' },
             { title: 'Gamification', icon: 'i-ph-trophy-duotone', iconColor: 'text-yellow-500', files: ['shop.vue', 'leaderboard.vue'], fileColor: 'text-yellow-600 bg-yellow-50', description: 'Wrapped by `dashboard` layout. Heavily relies on `UIcon` and `UBadge` to visualize progression, virtual currency, and relative ranking.' },
-            { title: 'User Management', icon: 'i-ph-user-gear-duotone', iconColor: 'text-rose-500', files: ['profile.vue', 'settings.vue'], fileColor: 'text-rose-600 bg-rose-50', description: 'Provides user state modification interfaces. Uses `USwitch`, `UAvatar`, and `UButton` to map and mutate user preferences.' }
+            { title: 'User Management', icon: 'i-ph-user-gear-duotone', iconColor: 'text-rose-500', files: ['profile.vue', 'settings.vue'], fileColor: 'text-rose-600 bg-rose-50', description: 'Provides user state modification interfaces. Uses `USwitch`, `UAvatar`, and `UButton` to map and mutate user preferences.' },
+            { title: 'Mission Control', icon: 'i-ph-shield-check-duotone', iconColor: 'text-indigo-500', files: ['admin/content.vue', 'admin/users.vue'], fileColor: 'text-indigo-600 bg-indigo-50', description: 'The administrative engine for content management. Features dynamic category CRUD, adventure connection tracking, and system-wide data seeding tools.' }
         ],
         domainComponents: [
             { title: 'AppLogo.vue', icon: 'i-ph-magic-wand-duotone', description: 'The centralized branding asset. Integrated within Auth screens and Dashboard navigation bars for a consistent visual identity.' },
-            { title: 'BgDecorations.vue', icon: 'i-ph-shapes-duotone', description: 'Abstract SVG background elements that inject a vibrant, kid-friendly aesthetic into the landing and dashboard screens.' }
+            { title: 'BgDecorations.vue', icon: 'i-ph-shapes-duotone', description: 'Abstract SVG background elements that inject a vibrant, kid-friendly aesthetic into the landing and dashboard screens.' },
+            { title: 'AppFab.vue', icon: 'i-ph-terminal-window-duotone', description: 'A highly flexible floating menu system. Supports environment-aware actions like data seeding, dev-nav, and user-specific triggers with smart positioning.' }
         ],
         nuxtUI: {
             description: 'Instead of building basic components from scratch, the app relies heavily on @nuxt/ui for rapid, accessible development.',
@@ -131,11 +149,28 @@ interface DailyQuest {
         icon: 'i-ph-clock-counter-clockwise-duotone',
         versions: [
             {
+                version: 'v1.7.0',
+                date: 'May 4, 2026',
+                status: 'Current',
+                color: 'emerald',
+                dotColor: 'bg-emerald-500',
+                title: 'Admin Content Engine & Component Unification',
+                changes: [
+                    'Completed <strong>Admin Content Engine Migration</strong> with dynamic category-driven visuals.',
+                    'Implemented <strong>Dynamic Adventure Styling</strong> inheriting icons/colors from managed categories.',
+                    'Launched Reusable <code>AppFab</code> component unifying developer and user floating menus.',
+                    'Consolidated seeder logic into a centralized <strong>"Seed All Data"</strong> developer action.',
+                    'Added <strong>Interactive Spotlight Hover</strong> effect to the main Dashboard header.',
+                    'Disabled <strong>Admin Authentication</strong> middleware for seamless administrative access.',
+                    'Enhanced <strong>Category Management</strong> with live adventure counts and empty states.',
+                    'Optimized <strong>Tailwind Safelist</strong> for dynamic color generation support.'
+                ]
+            },
+            {
                 version: 'v1.6.0',
                 date: 'Apr 30, 2026',
-                status: 'Current',
-                color: 'rose',
-                dotColor: 'bg-rose-500',
+                color: 'neutral',
+                dotColor: 'bg-neutral-300',
                 title: 'Daily Quests, Laboratory VFX & Profile Customization',
                 changes: [
                     'Launched <strong>Edit Profile</strong> suite with dynamic avatar selection and title customization.',

@@ -25,6 +25,16 @@ export interface Notification {
     read: boolean
 }
 
+export type UserRole = 'USER' | 'ADMIN' | 'MODERATOR'
+
+export interface UserProfile {
+    name: string
+    level: number
+    avatar: string
+    title: string
+    role: UserRole
+}
+
 // ============================================================
 // useUserStore — Global reactive user state via Nuxt useState
 // useState keeps values shared across all pages in the session
@@ -32,12 +42,13 @@ export interface Notification {
 
 export const useUserStore = () => {
     // --- Persistent State via Cookies ---
-    const userCookie = useCookie('learnfast-user', {
+    const userCookie = useCookie<UserProfile>('learnfast-user', {
         default: () => ({
             name: 'Explorer',
             level: 1,
             avatar: 'Felix',
-            title: 'New Explorer'
+            title: 'New Explorer',
+            role: 'USER'
         }),
         watch: true
     })
@@ -154,14 +165,21 @@ export const useUserStore = () => {
 
     const seedData = () => {
         const toast = useToast()
+        const suggestionsStore = useSuggestions()
+        const categoriesStore = useCategories()
+        console.log('useUserStore: Triggering seedData')
+        
         isSeeded.value = true
+        suggestionsStore.seedDefaults()
+        categoriesStore.seedDefaults()
 
         // Populate with Mock Data
         user.value = {
             name: 'Felix',
             level: 12,
             avatar: 'Felix',
-            title: 'Master of Space and Math'
+            title: 'Master of Space and Math',
+            role: 'ADMIN'
         }
 
         stats.value = {
@@ -180,7 +198,7 @@ export const useUserStore = () => {
 
         toast.add({
             title: 'Data Seeded!',
-            description: 'Mock data has been populated successfully.',
+            description: 'Mock data, magic prompts, and categories have been populated.',
             icon: 'i-ph-database-duotone',
             color: 'success'
         })
@@ -188,14 +206,20 @@ export const useUserStore = () => {
 
     const clearData = () => {
         const toast = useToast()
+        const { clearAll: clearPrompts } = useSuggestions()
+        const { clearAll: clearCategories } = useCategories()
+        
         isSeeded.value = false
+        clearPrompts()
+        clearCategories()
 
         // Reset to Fresh State
         user.value = {
             name: 'Explorer',
             level: 1,
             avatar: 'Felix',
-            title: 'New Explorer'
+            title: 'New Explorer',
+            role: 'USER'
         }
 
         stats.value = {
@@ -215,7 +239,7 @@ export const useUserStore = () => {
 
         toast.add({
             title: 'Data Cleared!',
-            description: 'All app data has been reset to empty state.',
+            description: 'All app data and prompts have been reset.',
             icon: 'i-ph-trash-duotone',
             color: 'error'
         })
@@ -223,6 +247,10 @@ export const useUserStore = () => {
 
     const updateUser = (data: Partial<typeof user.value>) => {
         user.value = { ...user.value, ...data }
+    }
+
+    const updateUserRole = (role: UserRole) => {
+        user.value.role = role
     }
 
     return {
@@ -246,6 +274,7 @@ export const useUserStore = () => {
         claimAllRewards,
         seedData,
         clearData,
-        updateUser
+        updateUser,
+        updateUserRole
     }
 }

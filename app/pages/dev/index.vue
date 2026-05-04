@@ -74,6 +74,28 @@ const tabs = [
                                 </p>
                             </UCard>
                         </div>
+
+                        <USeparator class="my-4" />
+
+                        <div class="space-y-6">
+                            <h3 class="text-2xl font-bold flex items-center gap-2">
+                                <UIcon :name="(DOCS_DATA.architecture as any).businessLogic.icon"
+                                    class="text-indigo-500" />
+                                {{ (DOCS_DATA.architecture as any).businessLogic.title }}
+                            </h3>
+                            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div v-for="composable in (DOCS_DATA.architecture as any).businessLogic.items"
+                                    :key="composable.name"
+                                    class="p-4 bg-white dark:bg-neutral-800 rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800 shadow-sm">
+                                    <div class="text-indigo-600 font-black text-sm mb-1 font-mono">
+                                        {{ composable.name }}
+                                    </div>
+                                    <p class="text-xs text-neutral-500 leading-relaxed italic">
+                                        {{ composable.description }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </template>
 

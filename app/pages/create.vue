@@ -6,7 +6,8 @@ definePageMeta({
 })
 
 const { user, addCustomAdventure } = useUserStore()
-const { categories: availableCategories, getRandomHarmony } = useAdventures()
+const { getHarmony } = useAdventures()
+const { categories, detectCategory } = useCategories()
 
 // Wizard State
 const currentStep = ref(0) // 0: onboarding, 1: topic, 2: materials, 3: duration, 4: confidence, 5: generating, 6: reveal
@@ -26,13 +27,7 @@ const form = reactive({
     ]
 })
 
-const suggestions = [
-    { label: '🪐 Outer Space', value: 'Exploring the Solar System and Planets' },
-    { label: '🦖 Dinosaurs', value: 'The Age of Dinosaurs and Fossils' },
-    { label: '🍕 Cooking', value: 'The Science of Baking and Pizza' },
-    { label: '🤖 Robots', value: 'How Robots Work and Coding' },
-    { label: '🌊 Oceans', value: 'Deep Sea Creatures and Coral Reefs' }
-]
+const { suggestions } = useSuggestions()
 
 const steps = [
     {
@@ -146,55 +141,19 @@ const startGeneration = () => {
     }, intervalTime)
 
     setTimeout(() => {
-        // Smart Category & Icon Detection
-        const topic = (form.topic || '').toLowerCase()
-        let detectedCategory = 'Science' // Default
-        let detectedIcon = 'i-ph-magic-wand-duotone' // Default
-
-        if (topic.includes('math') || topic.includes('number') || topic.includes('algebra')) {
-            detectedCategory = 'Math'
-            detectedIcon = 'i-ph-calculator-duotone'
-        } else if (topic.includes('history') || topic.includes('ancient') || topic.includes('war')) {
-            detectedCategory = 'History'
-            detectedIcon = 'i-ph-hourglass-duotone'
-        } else if (topic.includes('art') || topic.includes('paint') || topic.includes('music') || topic.includes('color')) {
-            detectedCategory = 'Art'
-            detectedIcon = 'i-ph-palette-duotone'
-        } else if (topic.includes('code') || topic.includes('computer') || topic.includes('robot') || topic.includes('ai') || topic.includes('tech')) {
-            detectedCategory = 'Computer'
-            detectedIcon = 'i-ph-cpu-duotone'
-        } else if (topic.includes('english') || topic.includes('story') || topic.includes('book') || topic.includes('write') || topic.includes('grammar')) {
-            detectedCategory = 'English'
-            detectedIcon = 'i-ph-book-open-duotone'
-        } else if (topic.includes('space') || topic.includes('planet') || topic.includes('astro')) {
-            detectedCategory = 'Science'
-            detectedIcon = 'i-ph-planet-duotone'
-        } else if (topic.includes('ocean') || topic.includes('sea') || topic.includes('fish') || topic.includes('water')) {
-            detectedCategory = 'Science'
-            detectedIcon = 'i-ph-waves-duotone'
-        } else if (topic.includes('dino') || topic.includes('fossil')) {
-            detectedCategory = 'History'
-            detectedIcon = 'i-ph-butterfly-duotone'
-        } else if (topic.includes('animal') || topic.includes('nature') || topic.includes('bug')) {
-            detectedCategory = 'Science'
-            detectedIcon = 'i-ph-bug-duotone'
-        } else if (topic.includes('cook') || topic.includes('pizza') || topic.includes('food')) {
-            detectedCategory = 'Science'
-            detectedIcon = 'i-ph-cooking-pot-duotone'
-        }
-
-        // Random Harmony
-        const harmony = getRandomHarmony()!
+        // Dynamic Category & Icon Detection using the Admin-managed keywords
+        const detected = detectCategory(form.topic)
+        const harmony = getHarmony(detected.color)
 
         // Create the real adventure object
         const slug = `custom-${Date.now()}`
         generatedAdventure.value = {
             slug,
             title: form.topic || 'My Custom Adventure',
-            category: detectedCategory,
+            category: detected.name,
             description: 'A personalized learning journey created just for you!',
             longDescription: 'This adventure was specially crafted by AI based on your interests.',
-            icon: detectedIcon,
+            icon: detected.icon,
             progress: 0,
             color: harmony.color,
             blob: harmony.blob,
@@ -362,9 +321,14 @@ const startGeneration = () => {
                 <div class="flex flex-col gap-6">
                     <p class="text-xs font-black text-muted uppercase tracking-widest">Or try a magical suggestion:</p>
                     <div class="flex flex-wrap justify-center gap-3">
-                        <UButton v-for="s in suggestions" :key="s.label" @click="selectSuggestion(s.value)"
+                        <UButton v-for="s in suggestions" :key="s.id" @click="selectSuggestion(s.value)"
                             variant="soft" color="neutral"
-                            class="px-4 py-2 rounded-xl font-bold text-base hover:scale-105 active:scale-95 transition-all bg-white/60 hover:bg-indigo-50 border-2 border-white shadow-md">
+                            class="pl-2 pr-4 py-2 rounded-xl font-bold text-base hover:scale-105 active:scale-95 transition-all bg-white/60 hover:bg-indigo-50 border-2 border-white shadow-md">
+                            <template #leading>
+                                <div :class="['size-8 rounded-lg flex items-center justify-center', `bg-${s.color}-50 text-${s.color}-600`] ">
+                                    <UIcon :name="s.icon" class="size-5" />
+                                </div>
+                            </template>
                             {{ s.label }}
                         </UButton>
                     </div>

@@ -3,11 +3,14 @@ definePageMeta({
     layout: 'dashboard'
 })
 
-const { user } = useUserStore()
+const { user, addCustomAdventure } = useUserStore()
+const { getRandomHarmony } = useAdventures()
+const { detectCategory } = useCategories()
 
 // Wizard State
 const currentStep = ref(0) // 0: onboarding, 1: topic, 2: materials, 3: duration, 4: confidence, 5: generating, 6: reveal
 const totalSteps = 4 // (Topic, Materials, Duration, Confidence)
+const generatedAdventure = ref<any>(null)
 
 const form = reactive({
     topic: '',
@@ -21,13 +24,7 @@ const form = reactive({
     ]
 })
 
-const suggestions = [
-    { label: '🪐 Outer Space', value: 'Exploring the Solar System and Planets' },
-    { label: '🦖 Dinosaurs', value: 'The Age of Dinosaurs and Fossils' },
-    { label: '🍕 Cooking', value: 'The Science of Baking and Pizza' },
-    { label: '🤖 Robots', value: 'How Robots Work and Coding' },
-    { label: '🌊 Oceans', value: 'Deep Sea Creatures and Coral Reefs' }
-]
+const { suggestions } = useSuggestions()
 
 const steps = [
     {
@@ -70,7 +67,35 @@ const selectSuggestion = (val: string) => {
 
 const startGeneration = () => {
     nextStep()
+    
     setTimeout(() => {
+        const detected = detectCategory(form.topic)
+        const harmony = getRandomHarmony()!
+        const slug = `custom-${Date.now()}`
+
+        generatedAdventure.value = {
+            slug,
+            title: form.topic || 'My Custom Adventure',
+            category: detected.name,
+            description: 'A personalized learning journey created just for you!',
+            longDescription: 'This adventure was specially crafted by AI based on your interests.',
+            icon: detected.icon,
+            progress: 0,
+            color: harmony.color,
+            blob: harmony.blob,
+            badge: 'AI Explorer',
+            lessons: 5,
+            time: '30 mins',
+            buttonClass: harmony.button,
+            startContent: {
+                tagline: 'Your custom journey awaits!',
+                goals: [
+                    { title: 'Intro', description: 'Begin your journey.', icon: 'i-ph-star-duotone', color: 'text-yellow-400' }
+                ]
+            }
+        }
+
+        addCustomAdventure(generatedAdventure.value)
         nextStep()
     }, 5000)
 }
@@ -174,11 +199,15 @@ const startGeneration = () => {
 
                 <div class="flex flex-col gap-6">
                     <p class="text-sm font-black text-muted uppercase tracking-widest">Or try a magical suggestion:</p>
-                    <div class="flex flex-wrap justify-center gap-4">
-                        <UButton v-for="s in suggestions" :key="s.label"
-                            @click="selectSuggestion(s.value)"
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <UButton v-for="s in suggestions" :key="s.id" @click="selectSuggestion(s.value)"
                             variant="soft" color="neutral"
-                            class="px-6 py-3 rounded-2xl font-bold text-lg hover:scale-105 active:scale-95 transition-all bg-white/60 hover:bg-indigo-50 border-2 border-white shadow-md">
+                            class="pl-2 pr-4 py-2 rounded-xl font-bold text-base hover:scale-105 active:scale-95 transition-all bg-white/60 hover:bg-indigo-50 border-2 border-white shadow-md">
+                            <template #leading>
+                                <div :class="['size-8 rounded-lg flex items-center justify-center', `bg-${s.color}-50 text-${s.color}-600`] ">
+                                    <UIcon :name="s.icon" class="size-5" />
+                                </div>
+                            </template>
                             {{ s.label }}
                         </UButton>
                     </div>
@@ -371,34 +400,20 @@ const startGeneration = () => {
 
                 <div class="flex justify-center">
                     <AdventureCard 
-                        class="w-full max-w-md scale-110 shadow-[0_35px_60px_-15px_rgba(99,102,241,0.3)] pointer-events-none"
-                        :adventure="{
-                            title: form.topic || 'My Custom Adventure',
-                            slug: 'custom-adventure',
-                            description: 'A personalized learning journey created just for you!',
-                            longDescription: 'This adventure was specially crafted by AI based on your interests.',
-                            icon: 'i-ph-magic-wand-duotone',
-                            progress: 0,
-                            color: 'bg-indigo-500',
-                            blob: 'bg-indigo-400/20',
-                            category: 'AI Generated',
-                            badge: 'AI Explorer',
-                            lessons: 5,
-                            time: '30 mins',
-                            startContent: {
-                                tagline: 'Your custom journey awaits!',
-                                goals: []
-                            }
-                        }"
+                        v-if="generatedAdventure"
+                        class="w-full max-w-md scale-110 shadow-[0_35px_60px_-15px_rgba(99,102,241,0.3)]"
+                        :adventure="generatedAdventure"
                     />
                 </div>
 
                 <div class="flex flex-col items-center gap-6 mt-10">
                     <UButton 
-                        to="/adventures/custom-adventure"
+                        v-if="generatedAdventure"
+                        :to="`/adventures/${generatedAdventure.slug}`"
                         label="Jump Into Adventure! →" 
                         size="xl"
-                        class="font-black px-20 py-8 rounded-3xl text-3xl shadow-2xl hover:scale-105 active:scale-95 transition-all bg-indigo-600 hover:bg-indigo-700 text-white border-0" />
+                        class="font-black px-20 py-8 rounded-3xl text-3xl shadow-2xl hover:scale-105 active:scale-95 transition-all text-white border-0" 
+                        :class="generatedAdventure.buttonClass" />
                     <UButton 
                         @click="currentStep = 0"
                         label="Create Another Magic" 
