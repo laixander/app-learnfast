@@ -1,4 +1,4 @@
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { onMounted, watch } from 'vue'
 
 export interface Suggestion {
   id: string
@@ -19,107 +19,97 @@ const DEFAULT_SUGGESTIONS: Suggestion[] = [
 ]
 
 export const useSuggestions = () => {
-    // Global reactive state via Nuxt's useState
+    // Global reactive state
     const suggestions = useState<Suggestion[]>('magical-suggestions-state', () => [])
-    const initialized = useState('magical-suggestions-initialized', () => false)
+    const isLoading = useState('suggestions-loading', () => false)
 
-    const save = () => {
-        if (import.meta.client) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(suggestions.value))
+    // Initial fetch using useAsyncData for SSR support
+    const { data: initialData, refresh } = useAsyncData('suggestions-initial', () => $fetch<Suggestion[]>('/api/suggestions'))
+    
+    // Watch for initial data
+    watch(initialData, (newData) => {
+        if (newData) suggestions.value = newData
+    }, { immediate: true })
+
+    const fetchSuggestions = async () => {
+        isLoading.value = true
+        try {
+            await refresh()
+            if (initialData.value) suggestions.value = initialData.value
+        } finally {
+            isLoading.value = false
         }
     }
 
-    const load = () => {
-        if (import.meta.server) return
-        
-        const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved)
-                suggestions.value = parsed.map((s: any) => ({
-                    ...s,
-                    icon: s.icon || 'i-ph-sparkle-duotone',
-                    color: s.color?.includes('-') ? 'primary' : (s.color || 'primary')
-                }))
-            } catch (e) {
-                suggestions.value = JSON.parse(JSON.stringify(DEFAULT_SUGGESTIONS))
-            }
-        } else {
-            suggestions.value = JSON.parse(JSON.stringify(DEFAULT_SUGGESTIONS))
-            save()
-        }
-        initialized.value = true
-    }
-
-    // Sync across tabs in real-time
-    const handleStorageChange = (e: StorageEvent) => {
-        if (e.key === STORAGE_KEY && e.newValue) {
-            console.log('Realtime Sync: Suggestions updated from another tab')
-            try {
-                suggestions.value = JSON.parse(e.newValue)
-            } catch (err) {
-                console.error('Failed to sync suggestions', err)
-            }
+    const addSuggestion = async (label: string, value: string, icon: string = 'i-ph-sparkle-duotone', color: string = 'primary') => {
+        isLoading.value = true
+        try {
+            await $fetch('/api/suggestions', {
+                method: 'POST',
+                body: { label, value, icon, color }
+            })
+            await fetchSuggestions()
+        } finally {
+            isLoading.value = false
         }
     }
 
-    const addSuggestion = (label: string, value: string, icon: string = 'i-ph-sparkle-duotone', color: string = 'primary') => {
-        const newSuggestion = {
-            id: Date.now().toString(),
-            label,
-            value,
-            icon,
-            color
+    const removeSuggestion = async (id: string) => {
+        isLoading.value = true
+        try {
+            await $fetch('/api/suggestions', {
+                method: 'DELETE',
+                query: { id }
+            })
+            await fetchSuggestions()
+        } finally {
+            isLoading.value = false
         }
-        // Use spread to ensure reactivity triggers everywhere
-        suggestions.value = [...suggestions.value, newSuggestion]
-        save()
     }
 
-    const removeSuggestion = (id: string) => {
-        suggestions.value = suggestions.value.filter(s => s.id !== id)
-        save()
-    }
-
-    const updateSuggestion = (id: string, label: string, value: string, icon: string, color: string) => {
-        suggestions.value = suggestions.value.map(s => 
-            s.id === id ? { id, label, value, icon, color } : s
-        )
-        save()
-    }
-
-    const seedDefaults = () => {
-        suggestions.value = JSON.parse(JSON.stringify(DEFAULT_SUGGESTIONS))
-        save()
-    }
-
-    const clearAll = () => {
-        suggestions.value = []
-        save()
-    }
-
-    // Lifecycle: Setup listener
-    if (import.meta.client) {
-        if (!initialized.value) {
-            load()
+    const updateSuggestion = async (id: string, label: string, value: string, icon: string, color: string) => {
+        isLoading.value = true
+        try {
+            await $fetch('/api/suggestions', {
+                method: 'POST',
+                body: { id, label, value, icon, color }
+            })
+            await fetchSuggestions()
+        } finally {
+            isLoading.value = false
         }
-        
-        onMounted(() => {
-            window.addEventListener('storage', handleStorageChange)
-        })
+    }
 
-        onUnmounted(() => {
-            window.removeEventListener('storage', handleStorageChange)
-        })
+    const seedDefaults = async () => {
+        isLoading.value = true
+        try {
+            // Bulk operation: reset all will be handled by the seed endpoint on the server if needed
+            // but for now we just call seed
+            await $fetch('/api/suggestions/seed', { method: 'POST' })
+            await fetchSuggestions()
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    const clearAll = async () => {
+        isLoading.value = true
+        try {
+            await $fetch('/api/suggestions/clear', { method: 'POST' })
+            await fetchSuggestions()
+        } finally {
+            isLoading.value = false
+        }
     }
 
     return {
         suggestions,
+        isLoading,
+        fetchSuggestions,
         addSuggestion,
         removeSuggestion,
         updateSuggestion,
         seedDefaults,
-        clearAll,
-        load
+        clearAll
     }
 }

@@ -26,7 +26,7 @@ const theme = computed(() => colorMap[props.color] ?? colorMap.violet!)
 
 <template>
     <div
-        :class="`bg-linear-to-br ${theme.bg} rounded-[3rem] border-4 border-white/80 shadow-2xl overflow-hidden relative min-h-[400px] flex items-center justify-center transition-all duration-500` ">
+        :class="`bg-linear-to-br ${theme.bg} rounded-[3rem] border-4 border-white/80 shadow-2xl overflow-hidden relative min-h-[400px] flex items-center justify-center transition-all duration-500`">
         <!-- Decorative blobs -->
         <div :class="`absolute -top-16 -left-16 size-48 ${theme.blob1} rounded-full blur-3xl opacity-60`" />
         <div :class="`absolute -bottom-16 -right-16 size-64 ${theme.blob2} rounded-full blur-3xl opacity-50`" />
@@ -44,7 +44,7 @@ const theme = computed(() => colorMap[props.color] ?? colorMap.violet!)
             <!-- Stars decoration -->
             <div class="flex gap-2">
                 <UIcon v-for="i in 5" :key="i" name="i-ph-star-fill"
-                    :class="`size-4 ${theme.icon} opacity-${i % 2 === 0 ? '40' : '70'}`" />
+                    :class="['size-4', theme.icon, i % 2 === 0 ? 'opacity-40' : 'opacity-70']" />
             </div>
 
             <!-- Text -->

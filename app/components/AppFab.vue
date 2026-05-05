@@ -3,6 +3,7 @@ interface FabAction {
     label: string
     icon: string
     color: string
+    loading?: boolean
     onClick: () => void
 }
 
@@ -46,9 +47,10 @@ const close = () => isOpen.value = false
                     </span>
 
                     <!-- Action Button -->
-                    <button @click="action.onClick(); close()"
-                        :class="[action.color, 'size-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 text-white']">
-                        <UIcon :name="action.icon" class="size-6" />
+                    <button @click="action.onClick(); !action.loading && close()" :disabled="action.loading"
+                        :class="[action.color, 'size-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 text-white disabled:opacity-50 disabled:cursor-not-allowed']">
+                        <UIcon v-if="action.loading" name="i-ph-circle-notch-bold" class="size-6 animate-spin" />
+                        <UIcon v-else :name="action.icon" class="size-6" />
                     </button>
 
                     <!-- Label for Left Position -->

@@ -1,3 +1,4 @@
+import { getCurrentInstance, onMounted, computed, watch } from 'vue'
 import { DEFAULT_QUESTS, DEFAULT_NOTIFICATIONS } from '~/constants/gameData'
 import { ADMIN_STATS, ADMIN_ACTIONS, MOCK_SHOP_ITEMS, type AdminStat, type AdminAction, type AdminShopItem } from '~/constants/adminData'
 import type { Adventure } from '~/types/adventures'
@@ -36,68 +37,90 @@ export interface UserProfile {
     role: UserRole
 }
 
+export interface Stats {
+    xp: number
+    coins: number
+    badges: number
+    streak: number
+    totalXp: string
+    lessonsDone: number
+    friends: number
+}
+
 // ============================================================
 // useUserStore — Global reactive user state via Nuxt useState
 // useState keeps values shared across all pages in the session
 // ============================================================
 
 export const useUserStore = () => {
-    // --- Persistent State via Cookies ---
-    const userCookie = useCookie<UserProfile>('learnfast-user', {
-        default: () => ({
-            name: 'Explorer',
-            level: 1,
-            avatar: 'Felix',
-            title: 'New Explorer',
-            role: 'USER'
-        }),
-        watch: true
-    })
-    const statsCookie = useCookie('learnfast-stats', {
-        default: () => ({
-            xp: 0,
-            coins: 0,
-            badges: 0,
-            streak: 0,
-            totalXp: '0',
-            lessonsDone: 0,
-            friends: 0
-        }),
-        watch: true
-    })
-    const questsCookie = useCookie<Quest[]>('learnfast-quests', { default: () => [], watch: true })
-    const notificationsCookie = useCookie<Notification[]>('learnfast-notifications', { default: () => [], watch: true })
-    const seededCookie = useCookie('learnfast-seeded', { default: () => 'false', watch: true })
-    const customAdventuresCookie = useCookie<Adventure[]>('learnfast-custom-adventures', { default: () => [], watch: true })
-    const completedLessonsCookie = useCookie<string[]>('learnfast-completed-lessons', { default: () => [], watch: true })
-    const adminStatsCookie = useCookie<AdminStat[]>('learnfast-admin-stats', { default: () => [], watch: true })
-    const adminActionsCookie = useCookie<AdminAction[]>('learnfast-admin-actions', { default: () => [], watch: true })
-    const shopItemsCookie = useCookie<AdminShopItem[]>('learnfast-shop-items', { default: () => [], watch: true })
+    const instance = getCurrentInstance()
+    const toast = instance ? useToast() : { add: () => console.warn('Toast called outside of setup') }
+    const suggestionsStore = useSuggestions()
+    const categoriesStore = useCategories()
 
-    // --- Reactive State (useState) initialized from Cookies ---
-    const user = useState('user', () => userCookie.value)
-    const stats = useState('user-stats', () => statsCookie.value)
-    const quests = useState<Quest[]>('user-quests', () => questsCookie.value || [])
-    const notifications = useState<Notification[]>('user-notifications', () => notificationsCookie.value || [])
-    const isSeeded = useState('seeded', () => seededCookie.value === 'true')
-    const customAdventures = useState<Adventure[]>('custom-adventures', () => customAdventuresCookie.value || [])
-    const completedLessons = useState<string[]>('completed-lessons', () => completedLessonsCookie.value || [])
-    const adminStats = useState<AdminStat[]>('admin-stats', () => adminStatsCookie.value || [])
-    const adminActions = useState<AdminAction[]>('admin-actions', () => adminActionsCookie.value || [])
-    const shopItems = useState<AdminShopItem[]>('shop-items', () => shopItemsCookie.value || [])
+    // --- Reactive State (useState) ---
+    const user = useState<UserProfile>('user', () => ({ name: 'Explorer', level: 1, avatar: 'Felix', title: 'New Explorer', role: 'USER' }))
+    const stats = useState<Stats>('user-stats', () => ({ xp: 0, coins: 0, badges: 0, streak: 0, totalXp: '0', lessonsDone: 0, friends: 0 }))
+    const quests = useState<Quest[]>('user-quests', () => [])
+    const notifications = useState<Notification[]>('user-notifications', () => [])
+    const isSeeded = useState('seeded', () => false)
+    const customAdventures = useState<Adventure[]>('custom-adventures', () => [])
+    const completedLessons = useState<string[]>('completed-lessons', () => [])
+    const adminStats = useState<AdminStat[]>('admin-stats', () => [])
+    const adminActions = useState<AdminAction[]>('admin-actions', () => [])
+    const shopItems = useState<AdminShopItem[]>('shop-items', () => [])
     const activeAdventureSlug = useState('active-adventure-slug', () => '')
+    const isSyncing = useState('user-store-syncing', () => false)
 
-    // --- Sync State back to Cookies ---
-    watch(user, (newVal) => { userCookie.value = newVal }, { deep: true })
-    watch(stats, (newVal) => { statsCookie.value = newVal }, { deep: true })
-    watch(quests, (newVal) => { questsCookie.value = newVal }, { deep: true })
-    watch(notifications, (newVal) => { notificationsCookie.value = newVal }, { deep: true })
-    watch(isSeeded, (newVal) => { seededCookie.value = newVal.toString() })
-    watch(customAdventures, (newVal) => { customAdventuresCookie.value = newVal }, { deep: true })
-    watch(completedLessons, (newVal) => { completedLessonsCookie.value = newVal }, { deep: true })
-    watch(adminStats, (newVal) => { adminStatsCookie.value = newVal }, { deep: true })
-    watch(adminActions, (newVal) => { adminActionsCookie.value = newVal }, { deep: true })
-    watch(shopItems, (newVal) => { shopItemsCookie.value = newVal }, { deep: true })
+    interface UserStoreData {
+        user: UserProfile
+        stats: Stats
+        quests: Quest[]
+        notifications: Notification[]
+        customAdventures: Adventure[]
+        adminStats: AdminStat[]
+        adminActions: AdminAction[]
+        shopItems: AdminShopItem[]
+        isSeeded: boolean
+    }
+
+    // Initial fetch using useAsyncData for SSR support
+    const { data: initialData, refresh } = useAsyncData('user-store-initial', () => $fetch<UserStoreData>('/api/user'))
+    
+    // Watch for initial data
+    watch(initialData, (newData) => {
+        if (newData) {
+            user.value = newData.user
+            stats.value = newData.stats
+            quests.value = newData.quests
+            notifications.value = newData.notifications
+            customAdventures.value = newData.customAdventures
+            adminStats.value = newData.adminStats
+            adminActions.value = newData.adminActions
+            shopItems.value = newData.shopItems
+            isSeeded.value = newData.isSeeded
+        }
+    }, { immediate: true })
+
+    const fetchUserStore = async () => {
+        await refresh()
+        if (initialData.value) {
+            user.value = initialData.value.user
+            stats.value = initialData.value.stats
+            quests.value = initialData.value.quests
+            notifications.value = initialData.value.notifications
+            customAdventures.value = initialData.value.customAdventures
+            adminStats.value = initialData.value.adminStats
+            adminActions.value = initialData.value.adminActions
+            shopItems.value = initialData.value.shopItems
+            isSeeded.value = initialData.value.isSeeded
+        }
+    }
+
+    // Helper for syncing changes
+    const syncWithServer = async (payload: any) => {
+        await $fetch('/api/user/sync', { method: 'POST', body: payload })
+    }
 
     // --- Computed Helpers ---
     const canClaim = computed(() =>
@@ -107,56 +130,62 @@ export const useUserStore = () => {
     const hasContent = computed(() => isSeeded.value || customAdventures.value.length > 0 || shopItems.value.length > 0)
 
     // --- Actions ---
-    const toggleQuest = (index: number) => {
+    const toggleQuest = async (index: number) => {
         const quest = quests.value[index]
         if (!quest || quest.claimed) return
         quest.done = !quest.done
-    }
-
-    const markNoteRead = (id: number) => {
-        const note = notifications.value.find(n => n.id === id)
-        if (note) note.read = true
-    }
-
-    const toggleNoteRead = (id: number) => {
-        const note = notifications.value.find(n => n.id === id)
-        if (note) note.read = !note.read
-    }
-
-    const deleteNote = (id: number) => {
-        notifications.value = notifications.value.filter(n => n.id !== id)
-    }
-
-    const clearAllNotes = () => {
-        notifications.value = []
-    }
-
-    const claimAllRewards = () => {
-        const toast = useToast()
-        let xpGained = 0
-        let coinsGained = 0
-        let badgesGained = 0
-
-        quests.value.forEach(q => {
-            if (q.done && !q.claimed) {
-                if (q.rewardType === 'xp') xpGained += q.rewardValue
-                if (q.rewardType === 'coins') coinsGained += q.rewardValue
-                if (q.rewardType === 'badges') badgesGained += q.rewardValue
-                q.claimed = true
-            }
+        await $fetch('/api/user/quests/toggle', {
+            method: 'POST',
+            body: { id: quest.id, done: quest.done }
         })
+    }
 
-        if (xpGained > 0 || coinsGained > 0 || badgesGained > 0) {
-            stats.value.xp += xpGained
-            stats.value.coins += coinsGained
-            stats.value.badges += badgesGained
+    const markNoteRead = async (id: number) => {
+        const note = notifications.value.find(n => n.id === id)
+        if (note) {
+            note.read = true
+            await syncWithServer({ notifications: notifications.value })
+        }
+    }
 
-            toast.add({
-                title: 'Rewards Claimed!',
-                description: `You earned ${xpGained > 0 ? xpGained + ' XP ' : ''}${coinsGained > 0 ? coinsGained + ' Coins ' : ''}${badgesGained > 0 ? badgesGained + ' Badge' : ''}!`,
-                icon: 'i-ph-gift-duotone',
-                color: 'primary'
-            })
+    const toggleNoteRead = async (id: number) => {
+        const note = notifications.value.find(n => n.id === id)
+        if (note) {
+            note.read = !note.read
+            await syncWithServer({ notifications: notifications.value })
+        }
+    }
+
+    const deleteNote = async (id: number) => {
+        notifications.value = notifications.value.filter(n => n.id !== id)
+        await syncWithServer({ notifications: notifications.value })
+    }
+
+    const clearAllNotes = async () => {
+        notifications.value = []
+        await syncWithServer({ notifications: [] })
+    }
+
+    const claimAllRewards = async () => {
+        isSyncing.value = true
+        try {
+            const data = await $fetch<any>('/api/user/quests/claim', { method: 'POST' })
+            if (data.success) {
+                stats.value = data.stats
+                quests.value = data.quests
+                
+                const { xp, coins, badges } = data.rewards
+                if (xp > 0 || coins > 0 || badges > 0) {
+                    toast.add({
+                        title: 'Rewards Claimed!',
+                        description: `You earned ${xp > 0 ? xp + ' XP ' : ''}${coins > 0 ? coins + ' Coins ' : ''}${badges > 0 ? badges + ' Badge' : ''}!`,
+                        icon: 'i-ph-gift-duotone',
+                        color: 'primary'
+                    })
+                }
+            }
+        } finally {
+            isSyncing.value = false
         }
     }
 
@@ -173,92 +202,46 @@ export const useUserStore = () => {
         }
     }
 
-    const seedData = () => {
-        const toast = useToast()
-        const suggestionsStore = useSuggestions()
-        const categoriesStore = useCategories()
-        console.log('useUserStore: Triggering seedData')
-        
-        isSeeded.value = true
-        suggestionsStore.seedDefaults()
-        categoriesStore.seedDefaults()
+    const seedData = async () => {
+        isSyncing.value = true
+        try {
+            await $fetch('/api/user/seed', { method: 'POST' })
+            await Promise.all([
+                fetchUserStore(),
+                suggestionsStore.fetchSuggestions(),
+                categoriesStore.fetchCategories()
+            ])
 
-        // Populate with Mock Data
-        user.value = {
-            name: 'Felix',
-            level: 12,
-            avatar: 'Felix',
-            title: 'Master of Space and Math',
-            role: 'ADMIN'
+            toast.add({
+                title: 'Data Seeded!',
+                description: 'Mock data, magic prompts, and categories have been populated.',
+                icon: 'i-ph-database-duotone',
+                color: 'success'
+            })
+        } finally {
+            isSyncing.value = false
         }
-
-        stats.value = {
-            xp: 2450,
-            coins: 120,
-            badges: 12,
-            streak: 5,
-            totalXp: '15.4k',
-            lessonsDone: 42,
-            friends: 8
-        }
-
-        quests.value = DEFAULT_QUESTS.map(q => ({ ...q }))
-        notifications.value = DEFAULT_NOTIFICATIONS.map(n => ({ ...n, read: false }))
-        completedLessons.value = ['intro-to-planets', 'moon-mission']
-        adminStats.value = ADMIN_STATS.map(s => ({ ...s }))
-        adminActions.value = ADMIN_ACTIONS.map(a => ({ ...a }))
-        shopItems.value = MOCK_SHOP_ITEMS.map(i => ({ ...i }))
-
-        toast.add({
-            title: 'Data Seeded!',
-            description: 'Mock data, magic prompts, and categories have been populated.',
-            icon: 'i-ph-database-duotone',
-            color: 'success'
-        })
     }
 
-    const clearData = () => {
-        const toast = useToast()
-        const { clearAll: clearPrompts } = useSuggestions()
-        const { clearAll: clearCategories } = useCategories()
-        
-        isSeeded.value = false
-        clearPrompts()
-        clearCategories()
+    const clearData = async () => {
+        isSyncing.value = true
+        try {
+            await $fetch('/api/user/clear', { method: 'POST' })
+            await Promise.all([
+                fetchUserStore(),
+                suggestionsStore.fetchSuggestions(),
+                categoriesStore.fetchCategories()
+            ])
 
-        // Reset to Fresh State
-        user.value = {
-            name: 'Explorer',
-            level: 1,
-            avatar: 'Felix',
-            title: 'New Explorer',
-            role: 'USER'
+            toast.add({
+                title: 'Data Cleared!',
+                description: 'All app data and prompts have been reset.',
+                icon: 'i-ph-trash-duotone',
+                color: 'error'
+            })
+        } finally {
+            isSyncing.value = false
         }
-
-        stats.value = {
-            xp: 0,
-            coins: 0,
-            badges: 0,
-            streak: 0,
-            totalXp: '0',
-            lessonsDone: 0,
-            friends: 0
-        }
-
-        quests.value = []
-        notifications.value = []
-        completedLessons.value = []
-        customAdventures.value = []
-        adminStats.value = []
-        adminActions.value = []
-        shopItems.value = []
-
-        toast.add({
-            title: 'Data Cleared!',
-            description: 'All app data and prompts have been reset.',
-            icon: 'i-ph-trash-duotone',
-            color: 'error'
-        })
     }
 
     const updateUser = (data: Partial<typeof user.value>) => {
@@ -279,7 +262,9 @@ export const useUserStore = () => {
         adminActions,
         shopItems,
         hasContent,
+        isSyncing,
         canClaim,
+        fetchUserStore,
         toggleQuest,
         markNoteRead,
         toggleNoteRead,

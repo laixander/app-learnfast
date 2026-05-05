@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useMouseInElement } from '@vueuse/core'
 
-const { user, seedData, clearData } = useUserStore()
-const { seedDefaults: seedCategories } = useCategories()
+const { user, seedData, clearData, isSyncing } = useUserStore()
+const { seedDefaults: seedCategories, isLoading: isCategoryLoading } = useCategories()
 const route = useRoute()
 
 const devActions = computed(() => [
@@ -22,12 +22,14 @@ const devActions = computed(() => [
         label: 'Seed All Data',
         icon: 'i-ph-database-duotone',
         color: 'bg-emerald-500 hover:bg-emerald-600',
+        loading: isSyncing.value || isCategoryLoading.value,
         onClick: () => { seedData(); seedCategories() }
     },
     {
         label: 'Clear Data',
         icon: 'i-ph-trash-duotone',
         color: 'bg-rose-500 hover:bg-rose-600',
+        loading: isSyncing.value,
         onClick: () => clearData()
     }
 ])

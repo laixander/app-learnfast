@@ -6,8 +6,8 @@ definePageMeta({
     middleware: 'admin'
 })
 
-const { suggestions, addSuggestion, removeSuggestion, updateSuggestion } = useSuggestions()
-const { categories, addCategory, removeCategory, updateCategory, seedDefaults } = useCategories()
+const { suggestions, addSuggestion, removeSuggestion, updateSuggestion, isLoading: isPromptLoading } = useSuggestions()
+const { categories, addCategory, removeCategory, updateCategory, seedDefaults, isLoading } = useCategories()
 const { adventures } = useAdventures()
 
 const getAdventureCount = (categoryName: string) => {
@@ -121,9 +121,10 @@ const handleSavePrompt = () => {
                 <p class="text-slate-500 font-medium italic">Control categories and AI magic prompts.</p>
             </div>
             <UButton v-if="activeTab === 'categories'" @click="openAddCategory" icon="i-ph-plus-bold"
-                label="Add Category" color="primary" class="font-black rounded-xl shadow-lg shadow-primary-500/20" />
-            <UButton v-else @click="openAddPrompt" icon="i-ph-sparkle-bold" label="Add Prompt" color="primary"
+                label="Add Category" color="primary" :loading="isLoading"
                 class="font-black rounded-xl shadow-lg shadow-primary-500/20" />
+            <UButton v-else @click="openAddPrompt" icon="i-ph-sparkle-bold" label="Add Prompt" color="primary"
+                :loading="isPromptLoading" class="font-black rounded-xl shadow-lg shadow-primary-500/20" />
         </div>
 
         <UTabs v-model="activeTab" :items="tabs" class="w-full" :ui="{ list: 'rounded-2xl' }">
@@ -166,7 +167,7 @@ const handleSavePrompt = () => {
                         </div>
                     </UCard>
                     <AppEmptyState v-if="categories.length === 0" title="No categories found"
-                        description="Add a new category to get started." icon="i-ph-folder-duotone"
+                        message="Add a new category to get started." icon="i-ph-folder-duotone"
                         class="md:col-span-2 lg:col-span-3" />
                 </div>
             </template>
@@ -197,7 +198,7 @@ const handleSavePrompt = () => {
                     </UCard>
 
                     <AppEmptyState v-if="suggestions.length === 0" title="No magical prompts"
-                        description="Add some sparks of inspiration for the explorers." icon="i-ph-sparkle-duotone" />
+                        message="Add some sparks of inspiration for the explorers." icon="i-ph-sparkle-duotone" />
                 </div>
             </template>
         </UTabs>
@@ -250,7 +251,7 @@ const handleSavePrompt = () => {
                     <UButton label="Cancel" color="neutral" variant="ghost" class="font-bold"
                         @click="isCategoryModalOpen = false" />
                     <UButton :label="editingCategory ? 'Update Category' : 'Create Category'" color="primary"
-                        class="font-black px-6 rounded-xl" @click="handleSaveCategory" />
+                        :loading="isLoading" class="font-black px-6 rounded-xl" @click="handleSaveCategory" />
                 </div>
             </template>
         </UModal>
@@ -301,7 +302,7 @@ const handleSavePrompt = () => {
                     <UButton label="Cancel" color="neutral" variant="ghost" class="font-bold"
                         @click="isPromptModalOpen = false" />
                     <UButton :label="editingPrompt ? 'Update Prompt' : 'Save Prompt'" color="primary"
-                        class="font-black px-6 rounded-xl" @click="handleSavePrompt" />
+                        :loading="isPromptLoading" class="font-black px-6 rounded-xl" @click="handleSavePrompt" />
                 </div>
             </template>
         </UModal>

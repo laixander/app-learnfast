@@ -1,4 +1,4 @@
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { onMounted, watch } from 'vue'
 
 export interface Category {
   id: string
@@ -22,83 +22,97 @@ const DEFAULT_CATEGORIES: Category[] = [
 ]
 
 export const useCategories = () => {
-    const categories = useState<Category[]>('app-categories-state', () => [...DEFAULT_CATEGORIES])
-    const initialized = useState('app-categories-initialized', () => false)
+    // Global reactive state
+    const categories = useState<Category[]>('app-categories-state', () => [])
+    const customAdventures = useState<any[]>('custom-adventures', () => [])
+    const isLoading = useState('categories-loading', () => false)
 
-    const save = () => {
-        if (import.meta.client) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(categories.value))
+    // Initial fetch using useAsyncData for SSR support
+    const { data: initialData, refresh } = useAsyncData('categories-initial', () => $fetch<Category[]>('/api/categories'))
+    
+    // Watch for initial data (runs on server and client hydration)
+    watch(initialData, (newData) => {
+        if (newData) categories.value = newData
+    }, { immediate: true })
+
+    const fetchCategories = async () => {
+        isLoading.value = true
+        try {
+            await refresh() // This re-runs useAsyncData and updates initialData
+            if (initialData.value) categories.value = initialData.value
+        } finally {
+            isLoading.value = false
         }
     }
 
-    const load = () => {
-        if (import.meta.server) return
-        
-        const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved) {
-            try {
-                categories.value = JSON.parse(saved)
-            } catch (e) {
-                categories.value = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES))
+    const addCategory = async (name: string, icon: string, color: string, keywords: string[] = []) => {
+        isLoading.value = true
+        try {
+            await $fetch('/api/categories', {
+                method: 'POST',
+                body: { name, icon, color, keywords }
+            })
+            await fetchCategories()
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    const removeCategory = async (id: string) => {
+        isLoading.value = true
+        try {
+            await $fetch('/api/categories', {
+                method: 'DELETE',
+                query: { id }
+            })
+            await fetchCategories()
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    const updateCategory = async (id: string, name: string, icon: string, color: string, keywords: string[]) => {
+        isLoading.value = true
+        try {
+            const oldCategory = categories.value.find(c => c.id === id)
+            const oldName = oldCategory?.name
+
+            await $fetch('/api/categories', {
+                method: 'POST',
+                body: { id, name, icon, color, keywords }
+            })
+            await fetchCategories()
+
+            // Cascade update: If name changed, update all custom adventures using this category
+            if (oldName && oldName !== name) {
+                customAdventures.value = customAdventures.value.map(adv => ({
+                    ...adv,
+                    category: adv.category === oldName ? name : adv.category
+                }))
             }
-        } else {
-            categories.value = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES))
-            save()
-        }
-        initialized.value = true
-    }
-
-    const handleStorageChange = (e: StorageEvent) => {
-        if (e.key === STORAGE_KEY && e.newValue) {
-            try {
-                categories.value = JSON.parse(e.newValue)
-            } catch (err) {}
+        } finally {
+            isLoading.value = false
         }
     }
 
-    const addCategory = (name: string, icon: string, color: string, keywords: string[] = []) => {
-        categories.value = [...categories.value, {
-            id: Date.now().toString(),
-            name,
-            icon,
-            color,
-            keywords
-        }]
-        save()
-    }
-
-    const removeCategory = (id: string) => {
-        categories.value = categories.value.filter(c => c.id !== id)
-        save()
-    }
-
-    const updateCategory = (id: string, name: string, icon: string, color: string, keywords: string[]) => {
-        const oldCategory = categories.value.find(c => c.id === id)
-        const oldName = oldCategory?.name
-
-        categories.value = categories.value.map(c => 
-            c.id === id ? { id, name, icon, color, keywords } : c
-        )
-        save()
-
-        // Cascade update: If name changed, update all custom adventures using this category
-        if (oldName && oldName !== name) {
-            const { customAdventures } = useUserStore()
-            customAdventures.value = customAdventures.value.map(adv => ({
-                ...adv,
-                category: adv.category === oldName ? name : adv.category
-            }))
+    const seedDefaults = async () => {
+        isLoading.value = true
+        try {
+            await $fetch('/api/categories/seed', { method: 'POST' })
+            await fetchCategories()
+        } finally {
+            isLoading.value = false
         }
     }
 
-    const seedDefaults = () => {
-        categories.value = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES))
-        save()
-    }
-
-    const clearAll = () => {
-        categories.value = []
-        save()
+    const clearAll = async () => {
+        isLoading.value = true
+        try {
+            await $fetch('/api/categories/clear', { method: 'POST' })
+            await fetchCategories()
+        } finally {
+            isLoading.value = false
+        }
     }
 
     const detectCategory = (topic: string): Category => {
@@ -111,20 +125,15 @@ export const useCategories = () => {
         return categories.value[0] || DEFAULT_CATEGORIES[0]!
     }
 
-    if (import.meta.client) {
-        if (!initialized.value) load()
-        onMounted(() => window.addEventListener('storage', handleStorageChange))
-        onUnmounted(() => window.removeEventListener('storage', handleStorageChange))
-    }
-
     return {
         categories,
+        isLoading,
+        fetchCategories,
         addCategory,
         removeCategory,
         updateCategory,
         seedDefaults,
         clearAll,
-        detectCategory,
-        load
+        detectCategory
     }
 }

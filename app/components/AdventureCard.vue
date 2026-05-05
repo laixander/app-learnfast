@@ -19,7 +19,7 @@ const dynamicProgress = computed(() => {
 
 <template>
     <UCard
-        class="group hover:ring-4 hover:ring-primary-500/30 transition-all duration-500 rounded-[2.5rem] border-0 shadow-xl overflow-hidden relative cursor-pointer relative"
+        class="group hover:ring-4 hover:ring-primary-500/30 transition-all duration-500 rounded-[2.5rem] border-0 shadow-xl overflow-hidden relative cursor-pointer"
         :ui="{ body: 'p-8 flex flex-col gap-6 relative z-10' }">
         <NuxtLink :to="`/lessons?adventure=${adventure.slug}`" class="absolute inset-0 -z-10" />
         <div

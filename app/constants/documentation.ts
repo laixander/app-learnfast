@@ -149,11 +149,25 @@ interface DailyQuest {
         icon: 'i-ph-clock-counter-clockwise-duotone',
         versions: [
             {
-                version: 'v1.8.0',
+                version: 'v1.9.0',
                 date: 'May 5, 2026',
                 status: 'Current',
                 color: 'emerald',
                 dotColor: 'bg-emerald-500',
+                title: 'Real-Time Sync & Performance Optimization',
+                changes: [
+                    'Implemented <strong>Real-Time State Synchronization</strong> using reactive watchers on <code>useAsyncData</code>.',
+                    'Eliminated <strong>Network Latency Simulation</strong> to achieve near-instantaneous data loading and UI transitions.',
+                    'Fixed <strong>Hydration Class Mismatches</strong> by standardizing server/client rendering for dynamic components.',
+                    'Optimized <strong>Reactive CRUD Workflows</strong> ensuring immediate UI feedback without manual refreshes.',
+                    'Refined <strong>Global State Watchers</strong> to propagate backend changes instantly to all application modules.'
+                ]
+            },
+            {
+                version: 'v1.8.0',
+                date: 'May 5, 2026',
+                color: 'neutral',
+                dotColor: 'bg-neutral-300',
                 title: 'Admin Sidebar Overhaul & Shop Sync',
                 changes: [
                     'Implemented <strong>Collapsible Sidebar</strong> with smooth cubic-bezier width animation and icon-only mode.',
