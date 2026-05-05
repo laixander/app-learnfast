@@ -19,7 +19,9 @@ const DEFAULT_CATEGORIES: Category[] = [
 const DEFAULT_SUGGESTIONS: Suggestion[] = [
     { id: '1', label: 'Space Adventure', value: 'Tell me a story about a brave astronaut visiting Mars.', icon: 'i-ph-rocket-duotone', color: 'primary' },
     { id: '2', label: 'Math Wizard', value: 'Help me solve a tricky math puzzle with magic.', icon: 'i-ph-magic-wand-duotone', color: 'success' },
-    { id: '3', label: 'Dino World', value: 'Take me back in time to meet a friendly T-Rex.', icon: 'i-ph-bug-duotone', color: 'warning' }
+    { id: '3', label: 'Dino World', value: 'Take me back in time to meet a friendly T-Rex.', icon: 'i-ph-bug-duotone', color: 'warning' },
+    { id: '4', label: 'Robot Buddy', value: 'Help me build a friendly robot that can talk and dance.', icon: 'i-ph-robot-duotone', color: 'info' },
+    { id: '5', label: 'Ocean Quest', value: 'Dive deep into the blue ocean to meet a giant friendly whale.', icon: 'i-ph-waves-duotone', color: 'teal' }
 ]
 
 // --- Server-side state (Mock Database) ---
