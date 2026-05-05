@@ -1,4 +1,5 @@
 import { DEFAULT_QUESTS, DEFAULT_NOTIFICATIONS } from '~/constants/gameData'
+import { ADMIN_STATS, ADMIN_ACTIONS, MOCK_SHOP_ITEMS, type AdminStat, type AdminAction, type AdminShopItem } from '~/constants/adminData'
 import type { Adventure } from '~/types/adventures'
 
 export interface Quest {
@@ -69,6 +70,9 @@ export const useUserStore = () => {
     const seededCookie = useCookie('learnfast-seeded', { default: () => 'false', watch: true })
     const customAdventuresCookie = useCookie<Adventure[]>('learnfast-custom-adventures', { default: () => [], watch: true })
     const completedLessonsCookie = useCookie<string[]>('learnfast-completed-lessons', { default: () => [], watch: true })
+    const adminStatsCookie = useCookie<AdminStat[]>('learnfast-admin-stats', { default: () => [], watch: true })
+    const adminActionsCookie = useCookie<AdminAction[]>('learnfast-admin-actions', { default: () => [], watch: true })
+    const shopItemsCookie = useCookie<AdminShopItem[]>('learnfast-shop-items', { default: () => [], watch: true })
 
     // --- Reactive State (useState) initialized from Cookies ---
     const user = useState('user', () => userCookie.value)
@@ -78,6 +82,9 @@ export const useUserStore = () => {
     const isSeeded = useState('seeded', () => seededCookie.value === 'true')
     const customAdventures = useState<Adventure[]>('custom-adventures', () => customAdventuresCookie.value || [])
     const completedLessons = useState<string[]>('completed-lessons', () => completedLessonsCookie.value || [])
+    const adminStats = useState<AdminStat[]>('admin-stats', () => adminStatsCookie.value || [])
+    const adminActions = useState<AdminAction[]>('admin-actions', () => adminActionsCookie.value || [])
+    const shopItems = useState<AdminShopItem[]>('shop-items', () => shopItemsCookie.value || [])
     const activeAdventureSlug = useState('active-adventure-slug', () => '')
 
     // --- Sync State back to Cookies ---
@@ -88,13 +95,16 @@ export const useUserStore = () => {
     watch(isSeeded, (newVal) => { seededCookie.value = newVal.toString() })
     watch(customAdventures, (newVal) => { customAdventuresCookie.value = newVal }, { deep: true })
     watch(completedLessons, (newVal) => { completedLessonsCookie.value = newVal }, { deep: true })
+    watch(adminStats, (newVal) => { adminStatsCookie.value = newVal }, { deep: true })
+    watch(adminActions, (newVal) => { adminActionsCookie.value = newVal }, { deep: true })
+    watch(shopItems, (newVal) => { shopItemsCookie.value = newVal }, { deep: true })
 
     // --- Computed Helpers ---
     const canClaim = computed(() =>
         quests.value.some(q => q.done && !q.claimed)
     )
 
-    const hasContent = computed(() => isSeeded.value || customAdventures.value.length > 0)
+    const hasContent = computed(() => isSeeded.value || customAdventures.value.length > 0 || shopItems.value.length > 0)
 
     // --- Actions ---
     const toggleQuest = (index: number) => {
@@ -195,6 +205,9 @@ export const useUserStore = () => {
         quests.value = DEFAULT_QUESTS.map(q => ({ ...q }))
         notifications.value = DEFAULT_NOTIFICATIONS.map(n => ({ ...n, read: false }))
         completedLessons.value = ['intro-to-planets', 'moon-mission']
+        adminStats.value = ADMIN_STATS.map(s => ({ ...s }))
+        adminActions.value = ADMIN_ACTIONS.map(a => ({ ...a }))
+        shopItems.value = MOCK_SHOP_ITEMS.map(i => ({ ...i }))
 
         toast.add({
             title: 'Data Seeded!',
@@ -236,6 +249,9 @@ export const useUserStore = () => {
         notifications.value = []
         completedLessons.value = []
         customAdventures.value = []
+        adminStats.value = []
+        adminActions.value = []
+        shopItems.value = []
 
         toast.add({
             title: 'Data Cleared!',
@@ -259,6 +275,9 @@ export const useUserStore = () => {
         quests,
         notifications,
         isSeeded,
+        adminStats,
+        adminActions,
+        shopItems,
         hasContent,
         canClaim,
         toggleQuest,

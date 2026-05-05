@@ -149,11 +149,28 @@ interface DailyQuest {
         icon: 'i-ph-clock-counter-clockwise-duotone',
         versions: [
             {
-                version: 'v1.7.0',
-                date: 'May 4, 2026',
+                version: 'v1.8.0',
+                date: 'May 5, 2026',
                 status: 'Current',
                 color: 'emerald',
                 dotColor: 'bg-emerald-500',
+                title: 'Admin Sidebar Overhaul & Shop Sync',
+                changes: [
+                    'Implemented <strong>Collapsible Sidebar</strong> with smooth cubic-bezier width animation and icon-only mode.',
+                    'Added <strong>Cursor Spotlight Effect</strong> to the admin sidebar using <code>useMouseInElement</code> with primary color radial gradient.',
+                    'Fixed <strong>Sidebar Sticky Positioning</strong> by locking root layout to <code>h-screen</code> with internal overflow scrolling.',
+                    'Applied <strong>Dynamic Active Link Background</strong> using per-link theme color (<code>bg-${link.color}-500/20</code>).',
+                    'Disabled <strong>translate-x offset</strong> on nav items when sidebar is collapsed for perfect vertical alignment.',
+                    'Wired <strong>Toggle Button</strong> with a horizontal flip animation (<code>-scale-x-100</code>) to indicate sidebar state.',
+                    'Fixed <strong>Dashboard Shop Empty State</strong> by extending <code>hasContent</code> to include <code>shopItems.value.length</code>.',
+                    'Added <strong>Pricing Plans Section</strong> to the landing page between Features and CTA.'
+                ]
+            },
+            {
+                version: 'v1.7.0',
+                date: 'May 4, 2026',
+                color: 'neutral',
+                dotColor: 'bg-neutral-300',
                 title: 'Admin Content Engine & Component Unification',
                 changes: [
                     'Completed <strong>Admin Content Engine Migration</strong> with dynamic category-driven visuals.',

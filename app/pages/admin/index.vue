@@ -1,22 +1,16 @@
 <script setup lang="ts">
+import { EMPTY_ADMIN_STATS } from '~/constants/adminData'
+
 definePageMeta({
     layout: 'admin',
     middleware: 'admin'
 })
 
-const stats = [
-    { label: 'Total Explorers', value: '1,284', icon: 'i-ph-users-duotone', color: 'primary', trend: '+12% from last month' },
-    { label: 'Active Adventures', value: '42', icon: 'i-ph-mountains-duotone', color: 'success', trend: '+3 new this week' },
-    { label: 'Magic Coins', value: '150.2k', icon: 'i-ph-atom-duotone', color: 'warning', trend: 'Economy stable' },
-    { label: 'AI Missions', value: '312', icon: 'i-ph-test-tube-duotone', color: 'info', trend: 'High engagement' }
-]
+const { adminStats, adminActions, hasContent } = useUserStore()
 
-const recentActions = [
-    { user: 'Leo', action: 'completed "Mars Mission"', time: '2 mins ago', icon: 'i-ph-check-circle-duotone', color: 'success' },
-    { user: 'Sarah', action: 'bought "Gold Dragon" title', time: '15 mins ago', icon: 'i-ph-shopping-cart-duotone', color: 'warning' },
-    { user: 'Admin', action: 'updated Shop prices', time: '1 hour ago', icon: 'i-ph-gear-duotone', color: 'primary' },
-    { user: 'Max', action: 'reached Level 20', time: '3 hours ago', icon: 'i-ph-trend-up-duotone', color: 'info' }
-]
+const displayStats = computed(() => {
+    return adminStats.value.length > 0 ? adminStats.value : EMPTY_ADMIN_STATS
+})
 </script>
 
 <template>
@@ -29,7 +23,7 @@ const recentActions = [
 
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-            <UCard v-for="stat in stats" :key="stat.label"
+            <UCard v-for="stat in displayStats" :key="stat.label"
                 class="overflow-hidden border-none shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-slate-300/60 transition-all duration-300 group">
                 <div class="flex items-center justify-between">
                     <div
@@ -59,22 +53,34 @@ const recentActions = [
                         <UButton label="View All" variant="ghost" color="neutral" size="xs" class="font-bold" />
                     </div>
                 </template>
-                <div v-for="(item, i) in recentActions" :key="i"
-                    class="flex items-center justify-between group hover:bg-primary-50 p-4 rounded-2xl transition-all duration-300">
-                    <div class="flex items-center gap-4">
-                        <div
-                            :class="`size-10 rounded-full bg-${item.color}-50 flex items-center justify-center text-${item.color}-600`">
-                            <UIcon :name="item.icon" class="size-5" />
+
+                <div v-if="adminActions.length > 0" class="space-y-1">
+                    <div v-for="(item, i) in adminActions" :key="i"
+                        class="flex items-center justify-between group hover:bg-primary-50 p-4 rounded-2xl transition-all duration-300">
+                        <div class="flex items-center gap-4">
+                            <div
+                                :class="`size-10 rounded-full bg-${item.color}-50 flex items-center justify-center text-${item.color}-600`">
+                                <UIcon :name="item.icon" class="size-5" />
+                            </div>
+                            <div>
+                                <p class="text-sm font-black text-slate-800">
+                                    <span class="text-primary-600">{{ item.user }}</span> {{ item.action }}
+                                </p>
+                                <p class="text-xs font-bold text-slate-400">{{ item.time }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm font-black text-slate-800">
-                                <span class="text-primary-600">{{ item.user }}</span> {{ item.action }}
-                            </p>
-                            <p class="text-xs font-bold text-slate-400">{{ item.time }}</p>
-                        </div>
+                        <UButton icon="i-ph-dots-three-bold" variant="ghost" color="neutral"
+                            class="opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <UButton icon="i-ph-dots-three-bold" variant="ghost" color="neutral"
-                        class="opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+
+                <!-- Empty State for Activity -->
+                <div v-else class="py-12 flex flex-col items-center justify-center text-center px-4">
+                    <div class="size-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 mb-4">
+                        <UIcon name="i-ph-ghost-duotone" class="size-10" />
+                    </div>
+                    <h4 class="text-lg font-black text-slate-800">No activity logged yet</h4>
+                    <p class="text-sm text-slate-500 font-medium max-w-xs mt-1">Actions taken by explorers and admins will appear here once the mission starts.</p>
                 </div>
             </UCard>
 

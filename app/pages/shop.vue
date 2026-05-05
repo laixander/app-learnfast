@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { SHOP_ITEMS } from '~/constants/gameData'
-
 definePageMeta({
     layout: 'dashboard'
 })
 
-const { stats, isSeeded, hasContent } = useUserStore()
+const { stats, isSeeded, hasContent, shopItems } = useUserStore()
 </script>
 
 <template>
@@ -29,7 +27,7 @@ const { stats, isSeeded, hasContent } = useUserStore()
 
         <template v-if="hasContent">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <UCard v-for="item in SHOP_ITEMS" :key="item.name"
+                <UCard v-for="item in shopItems" :key="item.name"
                     class="group hover:ring-4 hover:ring-orange-500/30 transition-all duration-500 rounded-[2.5rem] border-0 shadow-xl overflow-hidden"
                     :ui="{ body: 'p-8 flex flex-col items-center text-center gap-4' }">
                     <div

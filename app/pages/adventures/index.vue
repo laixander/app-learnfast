@@ -10,12 +10,19 @@ const selectedCategory = ref('All')
 const isMoreModalOpen = ref(false)
 
 const maxVisible = 6
-const visibleCategories = computed(() => {
-    // Return limited set if we have more than the limit
-    return categories.value.length > maxVisible ? categories.value.slice(0, maxVisible) : categories.value
+
+const activeCategories = computed(() => {
+    return categories.value.filter(cat =>
+        cat.name === 'All' || adventures.value.some(adv => adv.category === cat.name)
+    )
 })
 
-const hasMoreCategories = computed(() => categories.value.length > visibleCategories.value.length)
+const visibleCategories = computed(() => {
+    // Return limited set if we have more than the limit
+    return activeCategories.value.length > maxVisible ? activeCategories.value.slice(0, maxVisible) : activeCategories.value
+})
+
+const hasMoreCategories = computed(() => activeCategories.value.length > visibleCategories.value.length)
 
 // Spotlight Effect Logic
 const sectionRef = ref(null)
@@ -101,7 +108,7 @@ const selectCategory = (name: string) => {
 
                 <UButton v-if="hasMoreCategories" label="Explore All" icon="i-ph-sparkle-duotone" variant="soft"
                     color="primary"
-                    class="font-black px-6 py-2 rounded-xl whitespace-nowrap shadow-sm border-2 border-primary-100 hover:scale-105 hover:bg-white transition-all"
+                    class="font-black px-6 py-2 rounded-xl whitespace-nowrap shadow-sm border-2 border-primary-100 hover:scale-105 hover:bg-white transition-all ml-auto"
                     @click="isMoreModalOpen = true" />
             </div>
         </header>
@@ -155,7 +162,7 @@ const selectCategory = (name: string) => {
         </template>
         <template #body>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-6 p-4">
-                <button v-for="cat in categories" :key="cat.name"
+                <button v-for="cat in activeCategories" :key="cat.name"
                     class="group flex flex-col items-center gap-4 p-8 rounded-[2.5rem] transition-all duration-500 border-4 border-white shadow-xl hover:shadow-2xl hover:-translate-y-2 text-center relative overflow-hidden"
                     :class="selectedCategory === cat.name ? 'bg-primary-500 text-white border-primary-200' : 'bg-primary-50/50 hover:bg-white'"
                     @click="selectCategory(cat.name)">

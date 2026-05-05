@@ -4,13 +4,15 @@ definePageMeta({
     middleware: 'admin'
 })
 
-const logs = ref([
-    { timestamp: '2026-05-04 10:15:02', level: 'INFO', message: 'User "Felix" logged in successfully.', type: 'auth' },
-    { timestamp: '2026-05-04 10:16:45', level: 'WARN', message: 'AI Token limit reaching 80% for session_id_9f4f.', type: 'system' },
-    { timestamp: '2026-05-04 10:18:12', level: 'ERROR', message: 'Failed to load asset: /img/missing-avatar.png', type: 'error' },
-    { timestamp: '2026-05-04 10:20:30', level: 'INFO', message: 'Admin updated shop pricing for "Streak Freeze".', type: 'admin' },
-    { timestamp: '2026-05-04 10:22:15', level: 'INFO', message: 'New user "Luna" registered.', type: 'auth' }
-])
+import { MOCK_LOGS, type AdminLog } from '~/constants/adminData'
+
+const { hasContent } = useUserStore()
+
+const logs = ref<AdminLog[]>(hasContent.value ? [...MOCK_LOGS] : [])
+
+watch(hasContent, (newVal) => {
+    logs.value = newVal ? [...MOCK_LOGS] : []
+})
 </script>
 
 <template>
@@ -20,13 +22,13 @@ const logs = ref([
             <p class="text-slate-500 font-medium italic">Monitor application events and health.</p>
         </div>
 
-        <div class="flex-1 bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-slate-800">
+        <div class="flex-1 bg-slate-900 rounded-lg shadow-2xl overflow-hidden flex flex-col border border-slate-800">
             <!-- Terminal Header -->
-            <div class="h-10 bg-slate-800 flex items-center px-4 gap-2 border-b border-slate-700">
+            <div class="h-12 bg-slate-800 flex items-center px-4 gap-2 border-b border-slate-700">
                 <div class="size-3 rounded-full bg-rose-500" />
                 <div class="size-3 rounded-full bg-amber-500" />
                 <div class="size-3 rounded-full bg-emerald-500" />
-                <span class="ml-4 text-[10px] font-mono text-slate-400 uppercase tracking-widest">learnfast-main-log</span>
+                <span class="ml-4 text-xs font-mono text-slate-400 uppercase tracking-widest">learnfast-main-log</span>
             </div>
 
             <!-- Log Stream -->
@@ -42,13 +44,13 @@ const logs = ref([
                 </div>
                 <div class="animate-pulse text-emerald-400">_</div>
             </div>
-            
+
             <div class="p-4 bg-slate-800/50 border-t border-slate-700 flex items-center justify-between">
                 <div class="flex gap-4">
-                    <UButton label="Clear Logs" variant="ghost" color="neutral" size="xs" />
-                    <UButton label="Download JSON" variant="ghost" color="neutral" size="xs" />
+                    <UButton label="Clear Logs" variant="ghost" color="neutral" size="sm" />
+                    <UButton label="Download JSON" variant="ghost" color="neutral" size="sm" />
                 </div>
-                <UBadge label="Live Stream: Active" color="success" variant="soft" size="xs" />
+                <UBadge label="Live Stream: Active" color="success" variant="soft" size="md" />
             </div>
         </div>
     </div>

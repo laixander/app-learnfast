@@ -16,7 +16,9 @@ const DEFAULT_CATEGORIES: Category[] = [
     { id: '3', name: 'History', icon: 'i-ph-hourglass-duotone', color: 'warning', keywords: ['history', 'ancient', 'war', 'past', 'dino', 'fossil'] },
     { id: '4', name: 'Art', icon: 'i-ph-palette-duotone', color: 'error', keywords: ['art', 'paint', 'music', 'color', 'drawing', 'sketch'] },
     { id: '5', name: 'Computer', icon: 'i-ph-cpu-duotone', color: 'info', keywords: ['code', 'computer', 'robot', 'ai', 'tech', 'software', 'coding'] },
-    { id: '6', name: 'English', icon: 'i-ph-book-open-duotone', color: 'secondary', keywords: ['english', 'story', 'book', 'write', 'grammar', 'reading'] }
+    { id: '6', name: 'English', icon: 'i-ph-book-open-duotone', color: 'secondary', keywords: ['english', 'story', 'book', 'write', 'grammar', 'reading'] },
+    { id: '7', name: 'Geography', icon: 'i-ph-globe-hemisphere-west-duotone', color: 'teal', keywords: ['geography', 'earth', 'map', 'country', 'city', 'continent'] },
+    { id: '8', name: 'Music', icon: 'i-ph-music-notes-duotone', color: 'fuchsia', keywords: ['music', 'song', 'instrument', 'melody', 'rhythm', 'band'] }
 ]
 
 export const useCategories = () => {

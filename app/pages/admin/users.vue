@@ -13,15 +13,15 @@ const UBadge = resolveComponent('UBadge')
 const UIcon = resolveComponent('UIcon')
 const UButton = resolveComponent('UButton')
 
-const users = ref([
-    { id: 1, name: 'Felix', role: 'ADMIN', status: 'Active', avatar: 'Felix' },
-    { id: 2, name: 'Luna', level: 8, coins: 1200, role: 'USER', status: 'Active', avatar: 'Luna', plan: 'Free' },
-    { id: 3, name: 'Atlas', role: 'MODERATOR', status: 'Active', avatar: 'Atlas' },
-    { id: 4, name: 'Nova', level: 3, coins: 450, role: 'USER', status: 'Inactive', avatar: 'Nova', plan: 'Free' },
-    { id: 5, name: 'Orion', level: 22, coins: 12400, role: 'USER', status: 'Active', avatar: 'Orion', plan: 'Pro' },
-    { id: 6, name: 'Professor P.', role: 'ADMIN', status: 'Active', avatar: 'Professor' },
-    { id: 7, name: 'Sky Walker', level: 5, coins: 200, role: 'USER', status: 'Active', avatar: 'Sky', plan: 'Free' }
-])
+import { MOCK_USERS, type AdminUser } from '~/constants/adminData'
+
+const { hasContent } = useUserStore()
+
+const users = ref<AdminUser[]>(hasContent.value ? MOCK_USERS.map(u => ({ ...u })) : [])
+
+watch(hasContent, (newVal) => {
+    users.value = newVal ? MOCK_USERS.map(u => ({ ...u })) : []
+})
 
 const activeTab = ref('explorers')
 const tabs = [
@@ -167,6 +167,9 @@ const staffData = computed(() => users.value.filter(u => u.role !== 'USER'))
 
 const modalTitle = computed(() => {
     if (!selectedUser.value) return ''
+    const isNew = !users.value.some(u => u.id === selectedUser.value.id)
+    if (isNew) return 'Add New Staff Member'
+
     const userType = selectedUser.value.role === 'USER' ? 'Explorer' : 'Staff Member'
     return `Edit ${userType}: ${selectedUser.value.name}`
 })
@@ -181,14 +184,34 @@ const filteredStaff = computed(() => {
     return staffData.value.filter(u => u.name.toLowerCase().includes(q.value.toLowerCase()))
 })
 
+const openAddStaffModal = () => {
+    selectedUser.value = {
+        id: Date.now(),
+        name: '',
+        role: 'MODERATOR',
+        status: 'Active',
+        avatar: 'Felix'
+    }
+    isEditModalOpen.value = true
+}
+
 const saveUser = () => {
     const index = users.value.findIndex(u => u.id === selectedUser.value.id)
+    const toast = useToast()
+
     if (index !== -1) {
         users.value[index] = selectedUser.value
-        const toast = useToast()
         toast.add({
             title: 'Record Updated',
             description: `${selectedUser.value.name}'s details have been updated.`,
+            color: 'success',
+            icon: 'i-ph-check-circle-duotone'
+        })
+    } else {
+        users.value.unshift(selectedUser.value)
+        toast.add({
+            title: 'Staff Member Added',
+            description: `${selectedUser.value.name} has been added to the team.`,
             color: 'success',
             icon: 'i-ph-check-circle-duotone'
         })
@@ -206,20 +229,42 @@ const saveUser = () => {
             </div>
             <div class="flex items-center gap-3">
                 <UInput v-model="q" icon="i-ph-magnifying-glass-duotone" placeholder="Search directory..." class="w-64"
-                    :ui="{ base: 'rounded-xl' }" />
+                    :ui="{ base: 'py-3.5 rounded-xl' }" />
+                <UButton v-if="activeTab === 'staff'" label="Add Staff" icon="i-ph-user-plus-duotone" color="primary"
+                    class="font-bold rounded-xl" @click="openAddStaffModal" />
             </div>
         </div>
 
         <UTabs v-model="activeTab" :items="tabs" class="w-full" :ui="{ list: 'rounded-2xl' }">
             <template #explorers>
                 <UCard class="border-none shadow-xl shadow-slate-200/50 overflow-hidden mt-4" :ui="{ body: 'sm:p-0' }">
-                    <UTable :data="filteredExplorers" :columns="explorerColumns" class="w-full" />
+                    <UTable v-if="filteredExplorers.length > 0" :data="filteredExplorers" :columns="explorerColumns"
+                        class="w-full" />
+                    <div v-else class="py-12 flex flex-col items-center justify-center text-center px-4">
+                        <div
+                            class="size-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 mb-4">
+                            <UIcon name="i-ph-users-duotone" class="size-10" />
+                        </div>
+                        <h4 class="text-lg font-black text-slate-800">No explorers found</h4>
+                        <p class="text-sm text-slate-500 font-medium max-w-xs mt-1">There are no explorers to display.
+                            Seed the database or clear your search.</p>
+                    </div>
                 </UCard>
             </template>
 
             <template #staff>
                 <UCard class="border-none shadow-xl shadow-slate-200/50 overflow-hidden mt-4" :ui="{ body: 'sm:p-0' }">
-                    <UTable :data="filteredStaff" :columns="staffColumns" class="w-full" />
+                    <UTable v-if="filteredStaff.length > 0" :data="filteredStaff" :columns="staffColumns"
+                        class="w-full" />
+                    <div v-else class="py-12 flex flex-col items-center justify-center text-center px-4">
+                        <div
+                            class="size-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 mb-4">
+                            <UIcon name="i-ph-shield-star-duotone" class="size-10" />
+                        </div>
+                        <h4 class="text-lg font-black text-slate-800">No staff found</h4>
+                        <p class="text-sm text-slate-500 font-medium max-w-xs mt-1">There are no staff members to
+                            display. Seed the database or clear your search.</p>
+                    </div>
                 </UCard>
             </template>
         </UTabs>
@@ -242,7 +287,7 @@ const saveUser = () => {
                     </div>
 
                     <UFormField label="Name / Identifier" class="font-bold">
-                        <UInput v-model="selectedUser.name" class="rounded-xl" />
+                        <UInput v-model="selectedUser.name" class="rounded-xl w-full" />
                     </UFormField>
 
                     <!-- Player Stats: Only show if NOT staff -->
@@ -263,12 +308,12 @@ const saveUser = () => {
                     <!-- System Access: Visible for both but staff focus -->
                     <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
                         <UFormField label="System Role" class="font-bold">
-                            <USelect v-model="selectedUser.role" :options="['USER', 'MODERATOR', 'ADMIN']"
-                                class="rounded-xl" />
+                            <USelect v-model="selectedUser.role" :items="['USER', 'MODERATOR', 'ADMIN']"
+                                class="rounded-xl w-full" />
                         </UFormField>
                         <UFormField label="Account Status" class="font-bold">
-                            <USelect v-model="selectedUser.status" :options="['Active', 'Inactive', 'Suspended']"
-                                class="rounded-xl" />
+                            <USelect v-model="selectedUser.status" :items="['Active', 'Inactive', 'Suspended']"
+                                class="rounded-xl w-full" />
                         </UFormField>
                     </div>
                 </div>
